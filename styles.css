@@ -1,0 +1,88 @@
+html {
+  box-sizing: border-box;
+  max-height: 100vh;
+  margin: 0;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  max-height: 100vh;
+}
+
+#page-container {
+  margin: 0 auto;
+  text-align: center;
+  max-height: 90vh;
+}
+#player-board-container {
+  display: inline-block;
+}
+#computer-board-container {
+  display: inline-block;
+}
+
+#player-board {
+  height: 55vmin;
+  width: 55vmin;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  border: 2px solid black;
+  margin-right: 3rem;
+  background-color: gray;
+}
+
+.p-row > div {
+  height: 95%;
+  width: 95%;
+}
+
+#computer-board {
+  height: 55vmin;
+  width: 55vmin;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  border: 2px solid black;
+}
+
+h2 {
+  position: inline;
+  text-align: left;
+}
+
+#bottom-window {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 2rem auto;
+  width: 125.8vmin;
+  max-width: 100vw;
+  height: 32vmin;
+  text-align: center;
+  border: 2px solid blue;
+}
+
+#info {
+  text-align: left;
+  border: 1px solid red;
+  width: 47.7%;
+  height: 30vmin;
+  display: inline-block;
+}
+
+#ship-container {
+  border: 2px solid black;
+  height: 30vmin;
+  width: 60vmin;
+  display: inline-block;
+}
+
+p {
+  margin: 4rem 0 2rem 0;
+}
+
+.p-row {
+  grid-column: 1;
+}
