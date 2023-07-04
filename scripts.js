@@ -18,18 +18,21 @@ const playerBoard = document.getElementById("player-board");
 const computerBoard = document.getElementById("computer-board");
 const ships = [...document.getElementsByClassName("ship")];
 const shipLengths = ships.map((ship) => ship.dataset.length);
+const msg = document.getElementById("msg");
 
 /*----- event listeners -----*/
 ships.forEach((ship) =>
   ship.addEventListener("dragstart", (e) => {
     dragged = e.target;
-    console.log(dragged);
   })
 );
 
-playerBoard.addEventListener("dragover", (e) => e.preventDefault);
+playerBoard.addEventListener("dragover", (e) => e.preventDefault());
 
-playerBoard.addEventListener("drop", (e) => e.preventDefault);
+// playerBoard.addEventListener("drop", (e) => {
+//   e.preventDefault();
+//   console.log(e.target);
+// });
 /*----- functions -----*/
 buildBoards();
 function startGame() {
@@ -67,9 +70,113 @@ function buildBoards() {
 const playerBoardSquares = [...playerBoard.querySelectorAll("div")];
 const computerBoardSquares = [...computerBoard.querySelectorAll("div")];
 
-// console.log(playerBoardSquares);
-// console.log(computerBoardSquares);
-// console.log(shipLengths);
+playerBoardSquares.forEach((square) => {
+  square.addEventListener("dragover", (e) => {
+    e.preventDefault();
+  }),
+    square.addEventListener("drop", (e) => handleDrop(e, dragged));
+});
+
+function handleDrop(e, dragged) {
+  e.preventDefault();
+  let dropIdx = playerBoardSquares.indexOf(e.target);
+  let shipLength = dragged.getAttribute("data-length");
+  // console.log(shipLength);
+  let isHorizontal = false;
+  setPlayerShip(dropIdx, shipLength, isHorizontal);
+}
+
+function setPlayerShip(startIdx, shipLength, isHorizontal) {
+  if (startIdx < 0 || startIdx > 99) startIdx = 0;
+
+  while (playerTakenSquares.includes(startIdx)) {
+    startIdx -= 1;
+    if (startIdx < 0) {
+      startIdx = 99;
+    }
+  }
+
+  checkValidPlayerBounds(shipLength, startIdx, isHorizontal);
+}
+
+function checkValidPlayerBounds(shipLength, startIdx, isHorizontal) {
+  if (isHorizontal) {
+    if (startIdx > 100 - shipLength) {
+      startIdx = 100 - shipLength;
+    }
+
+    for (let k = 10; k < 100; k += 10) {
+      let lowerValidBound = k - 10;
+      if (startIdx >= lowerValidBound && startIdx <= k) {
+        if (startIdx > k - shipLength) {
+          startIdx = k - shipLength;
+        }
+
+        while (playerTakenSquares.includes(startIdx)) {
+          startIdx--;
+          if (startIdx < 0) {
+            startIdx = 99;
+          }
+        }
+
+        updatePlayerTakenSquares(shipLength, startIdx, isHorizontal);
+        return; // Exit the loop after finding a valid startIdx
+      }
+    }
+  } else {
+    while (startIdx >= 110 - shipLength * 10) {
+      startIdx -= 10;
+    }
+
+    updatePlayerTakenSquares(shipLength, startIdx, isHorizontal);
+  }
+}
+
+function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
+  let isTaken = true;
+  if (isHorizontal) {
+    for (let j = 0; j < shipLength; j++) {
+      if (!playerTakenSquares.includes(validStart + j)) {
+        isTaken = false;
+      } else {
+        isTaken = true;
+        break;
+      }
+    }
+  } else {
+    let currentStart = validStart; // Introduce a new variable for iteration
+    for (let j = 0; j < shipLength; j++) {
+      if (!playerTakenSquares.includes(currentStart)) {
+        isTaken = false;
+      } else {
+        isTaken = true;
+        break;
+      }
+      currentStart += 10; // Increment the currentStart variable instead of modifying validStart
+    }
+  }
+
+  if (isTaken) {
+    validStart -= 10;
+    setPlayerShip(validStart, shipLength, isHorizontal);
+  } else {
+    if (isHorizontal) {
+      for (let j = 0; j < shipLength; j++) {
+        playerTakenSquares.push(validStart + j);
+        // console.log(validStart + j);
+      }
+    } else {
+      let currentStart = validStart;
+      for (let j = 0; j < shipLength; j++) {
+        playerTakenSquares.push(currentStart);
+        currentStart += 10; // Increment the currentStart variable
+      }
+    }
+  }
+  // console.log(playerBoardSquares);
+  // console.log(playerTakenSquares);
+  renderBoard(playerTakenSquares, playerBoardSquares);
+}
 
 shipLengths.forEach((ship) => setupComputerShips(ship));
 
@@ -80,11 +187,6 @@ function setupComputerShips(shipLength) {
   let randomIdx = Math.floor(Math.random() * 100);
   while (computerTakenSquares.includes(randomIdx)) {
     randomIdx = Math.floor(Math.random() * 100);
-
-    // Check if all indices are taken
-    if (computerTakenSquares.length === 100) {
-      break;
-    }
   }
   // randomly make ships horizontal
   let horizontal = Math.random() < 0.5;
@@ -155,7 +257,7 @@ function updateComputerTakenSquares(shipLength, validStart, horizontal) {
         isTaken = true;
         break;
       }
-      console.log(currentStart);
+      // console.log(currentStart);
       currentStart += 10; // Increment the currentStart variable instead of modifying validStart
     }
   }
@@ -176,17 +278,17 @@ function updateComputerTakenSquares(shipLength, validStart, horizontal) {
       }
     }
   }
+  renderBoard(computerTakenSquares, computerBoardSquares);
 }
 
-console.log(computerTakenSquares);
+// console.log(computerTakenSquares);
 
 //use state to update UI
-renderComputerBoard(computerTakenSquares, computerBoardSquares);
-function renderComputerBoard(computerTakenSquares, computerBoardSquares) {
-  computerTakenSquares.forEach(
-    (idx) =>
-      (computerBoardSquares[idx].style.backgroundColor = "var(--main-blue)")
-  );
+
+function renderBoard(takenSquares, boardSquares) {
+  takenSquares.forEach((idx) => {
+    boardSquares[idx].style.backgroundColor = "var(--main-blue)";
+  });
 }
 
 // todo
