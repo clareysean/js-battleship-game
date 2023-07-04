@@ -6,6 +6,8 @@ const boardWidth = 10;
 
 //board state represent hits +1 and misses -1
 let boardState;
+let validStart;
+let dragged = null;
 
 let playerTakenSquares = []; //store the coordinates of where the ship divs have been dropped
 
@@ -16,12 +18,18 @@ const playerBoard = document.getElementById("player-board");
 const computerBoard = document.getElementById("computer-board");
 const ships = [...document.getElementsByClassName("ship")];
 const shipLengths = ships.map((ship) => ship.dataset.length);
-/*----- event listeners -----*/
-console.log(playerBoard);
-console.log(computerBoard);
-console.log(ships);
-console.log(shipLengths);
 
+/*----- event listeners -----*/
+ships.forEach((ship) =>
+  ship.addEventListener("dragstart", (e) => {
+    dragged = e.target;
+    console.log(dragged);
+  })
+);
+
+playerBoard.addEventListener("dragover", (e) => e.preventDefault);
+
+playerBoard.addEventListener("drop", (e) => e.preventDefault);
 /*----- functions -----*/
 buildBoards();
 function startGame() {
@@ -59,50 +67,126 @@ function buildBoards() {
 const playerBoardSquares = [...playerBoard.querySelectorAll("div")];
 const computerBoardSquares = [...computerBoard.querySelectorAll("div")];
 
-console.log(playerBoardSquares);
-console.log(computerBoardSquares);
+// console.log(playerBoardSquares);
+// console.log(computerBoardSquares);
+// console.log(shipLengths);
 
-setupComputerShips(shipLengths);
+shipLengths.forEach((ship) => setupComputerShips(ship));
 
-function setupComputerShips(shipLengthsArr) {
+function setupComputerShips(shipLength) {
   //for all ships
-  for (let i = 0; i <= shipLengthsArr.length; i++) {
-    let randomIdx = Math.floor(Math.random() * 100);
-    if (Math.random() < 0.5) {
-      for (let j = 0; j <= shipLengthsArr[i]; j++) {
-        computerTakenSquares.push(randomIdx + j);
+
+  // console.log(shipLengthsArr[i]);
+  let randomIdx = Math.floor(Math.random() * 100);
+  while (computerTakenSquares.includes(randomIdx)) {
+    randomIdx = Math.floor(Math.random() * 100);
+
+    // Check if all indices are taken
+    if (computerTakenSquares.length === 100) {
+      break;
+    }
+  }
+  // randomly make ships horizontal
+  let horizontal = Math.random() < 0.5;
+  checkValidComputerBounds(shipLength, randomIdx, horizontal);
+
+  //vertical
+
+  // console.log(computerTakenSquares);
+
+  // don't allow overlap
+  // if computerTakenSquares contains
+}
+
+function checkValidComputerBounds(shipLength, randomIdx, horizontal) {
+  if (horizontal) {
+    if (randomIdx > 100 - shipLength) {
+      randomIdx = 100 - shipLength;
+    }
+
+    //given a random start index, and a ship length, only allow start indices between 0 and 10-length, 10 and 20-length, 20 and 30-length, 30 and 40-length, 40 and 50-length,
+    for (let k = 10; k < 100; k += 10) {
+      let lowerValidBound = k - 10;
+      if (randomIdx >= lowerValidBound && randomIdx <= k) {
+        if (randomIdx > k - shipLength) {
+          randomIdx = k - shipLength;
+        }
+
+        // Check if the adjusted randomIdx is not in computerTakenSquares array
+        while (computerTakenSquares.includes(randomIdx)) {
+          randomIdx--;
+        }
+
+        break; // Exit the loop after finding a valid randomIdx
+      }
+    }
+
+    //vertical
+  } else {
+    if (randomIdx > 99 - shipLength * 10) {
+      randomIdx = 99 - (shipLength - 1) * 10;
+    }
+    while (computerTakenSquares.includes(randomIdx)) {
+      randomIdx--;
+    }
+  }
+  validStart = randomIdx;
+  // console.log(`pre update` + validStart);
+  updateComputerTakenSquares(shipLength, validStart, horizontal);
+}
+
+function updateComputerTakenSquares(shipLength, validStart, horizontal) {
+  let isTaken = true;
+  if (horizontal) {
+    for (let j = 0; j < shipLength; j++) {
+      if (!computerTakenSquares.includes(validStart + j)) {
+        isTaken = false;
+      } else {
+        isTaken = true;
+        break;
+      }
+    }
+  } else {
+    let currentStart = validStart; // Introduce a new variable for iteration
+    for (let j = 0; j < shipLength; j++) {
+      if (!computerTakenSquares.includes(currentStart)) {
+        isTaken = false;
+      } else {
+        isTaken = true;
+        break;
+      }
+      console.log(currentStart);
+      currentStart += 10; // Increment the currentStart variable instead of modifying validStart
+    }
+  }
+
+  if (isTaken) {
+    setupComputerShips(shipLength);
+  } else {
+    if (horizontal) {
+      for (let j = 0; j < shipLength; j++) {
+        computerTakenSquares.push(validStart + j);
+        // console.log(validStart + j);
       }
     } else {
-      for (let j = 0; j <= shipLengthsArr[i]; j++) {
-        computerTakenSquares.push(randomIdx);
-        randomIdx += 10;
-        //add guard here so that ships can't be added after 10 - length
+      let currentStart = validStart;
+      for (let j = 0; j < shipLength; j++) {
+        computerTakenSquares.push(currentStart);
+        currentStart += 10; // Increment the currentStart variable
       }
     }
   }
-  console.log(computerTakenSquares);
-
-  // todo: create alg for vertical assignment of taken squares
-  // for horizontal ships, valid starting points are
-  // random between (0 and 10 - ship.dataset.length)
-  //
-  //
-  // for loop for rows adding ten to the valid starts each time
-  //starting at random indexes  (generate randon num), update computerTakenSquares with (indexes of taken squares)
-  // ships.forEach((ship) => console.log(ship.dataset.length));
 }
 
-//use state to update UI
+console.log(computerTakenSquares);
 
-function renderBoard() {
-  boardState.forEach((colArr, colIdx) => {
-    // Iterate over the cells in the cur column (colArr)
-    colArr.forEach((cellVal, rowIdx) => {
-      const cellId = `c${colIdx}r${rowIdx}`;
-      const cellEl = document.getElementById(cellId);
-      //add style for dot indicating hit or miss
-    });
-  });
+//use state to update UI
+renderComputerBoard(computerTakenSquares, computerBoardSquares);
+function renderComputerBoard(computerTakenSquares, computerBoardSquares) {
+  computerTakenSquares.forEach(
+    (idx) =>
+      (computerBoardSquares[idx].style.backgroundColor = "var(--main-blue)")
+  );
 }
 
 // todo
