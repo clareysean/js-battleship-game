@@ -1,3 +1,8 @@
+:root {
+  --main-blue: rgb(84, 133, 255);
+  --board-bg: rgb(238, 238, 238);
+}
+
 html {
   box-sizing: border-box;
   max-height: 100vh;
@@ -8,6 +13,10 @@ body {
   margin: 0;
   padding: 0;
   max-height: 100vh;
+}
+
+p {
+  margin: 4rem 0 2rem 0;
 }
 
 #page-container {
@@ -23,28 +32,37 @@ body {
 }
 
 #player-board {
+  padding: none;
   height: 55vmin;
   width: 55vmin;
   display: grid;
+  gap: 1px;
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(10, 1fr);
   border: 2px solid black;
   margin-right: 3rem;
-  background-color: gray;
-}
-
-.p-row > div {
-  height: 95%;
-  width: 95%;
+  background-color: var(--board-bg);
 }
 
 #computer-board {
   height: 55vmin;
   width: 55vmin;
   display: grid;
+  gap: 1px;
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(10, 1fr);
   border: 2px solid black;
+  background-color: var(--board-bg);
+}
+
+#computer-board > div,
+#player-board > div {
+  background-color: white;
+}
+
+#computer-board > div:hover,
+#player-board > div:hover {
+  background-color: rgb(174, 208, 255);
 }
 
 h2 {
@@ -69,20 +87,42 @@ h2 {
   border: 1px solid red;
   width: 47.7%;
   height: 30vmin;
-  display: inline-block;
 }
 
 #ship-container {
   border: 2px solid black;
   height: 30vmin;
   width: 60vmin;
-  display: inline-block;
+  display: flex;
+  justify-content: space-around;
 }
 
-p {
-  margin: 4rem 0 2rem 0;
+.ship {
+  background-color: var(--main-blue);
+  border-radius: 1rem;
 }
 
-.p-row {
-  grid-column: 1;
+.destroyer {
+  height: 10vmin;
+  width: 5vmin;
+}
+
+.sub {
+  height: 15vmin;
+  width: 5vmin;
+}
+
+.cruiser {
+  height: 15vmin;
+  width: 5vmin;
+}
+
+.battleship {
+  height: 20vmin;
+  width: 5vmin;
+}
+
+.carrier {
+  height: 25vmin;
+  width: 5vmin;
 }

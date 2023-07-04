@@ -10,33 +10,11 @@
     <div id="page-container">
       <div id="player-board-container">
         <h2>Player</h2>
-        <div id="player-board">
-          <div class="p-row"></div>
-          <div class="p-row"></div>
-          <div class="p-row"></div>
-          <div class="p-row"></div>
-          <div class="p-row"></div>
-          <div class="p-row"></div>
-          <div class="p-row"></div>
-          <div class="p-row"></div>
-          <div class="p-row"></div>
-          <div class="p-row"></div>
-        </div>
+        <div id="player-board"></div>
       </div>
       <div id="computer-board-container">
         <h2>Computer</h2>
-        <div id="computer-board">
-          <div class="c-row"></div>
-          <div class="c-row"></div>
-          <div class="c-row"></div>
-          <div class="c-row"></div>
-          <div class="c-row"></div>
-          <div class="c-row"></div>
-          <div class="c-row"></div>
-          <div class="c-row"></div>
-          <div class="c-row"></div>
-          <div class="c-row"></div>
-        </div>
+        <div id="computer-board"></div>
       </div>
       <section id="bottom-window">
         <div id="info">
@@ -45,7 +23,13 @@
           <button>START GAME</button><button>RESET GAME</button
           ><button>ROTATE SHIP</button>
         </div>
-        <div id="ship-container"></div>
+        <div id="ship-container">
+          <div class="ship destroyer" data-length="2" draggable="true"></div>
+          <div class="ship sub" data-length="3" draggable="true"></div>
+          <div class="ship cruiser" data-length="3" draggable="true"></div>
+          <div class="ship battleship" data-length="4" draggable="true"></div>
+          <div class="ship carrier" data-length="5" draggable="true"></div>
+        </div>
       </section>
     </div>
     <script src="scripts.js"></script>

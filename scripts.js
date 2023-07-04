@@ -1,41 +1,107 @@
 /*----- constants -----*/
 const boardHeight = 10;
 const boardWidth = 10;
+
 /*----- state variables -----*/
+
+//board state represent hits +1 and misses -1
 let boardState;
+
+let playerTakenSquares = []; //store the coordinates of where the ship divs have been dropped
+
+let computerTakenSquares = []; // store the coordinates of where computerSetup places boats (simply spans across the )
+
 /*----- cached elements  -----*/
-const playerBoard = [...document.querySelectorAll(".p-row")];
-const computerBoard = [...document.querySelectorAll(".c-row")];
+const playerBoard = document.getElementById("player-board");
+const computerBoard = document.getElementById("computer-board");
+const ships = [...document.getElementsByClassName("ship")];
+const shipLengths = ships.map((ship) => ship.dataset.length);
 /*----- event listeners -----*/
 console.log(playerBoard);
 console.log(computerBoard);
+console.log(ships);
+console.log(shipLengths);
+
 /*----- functions -----*/
 buildBoards();
 function startGame() {
   boardState = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ];
   buildBoards();
-  buildShips();
 }
 
 function buildBoards() {
-  //build cols
+  //for player
+
+  for (let i = 0; i < 10; i++) {
+    for (let j = 0; j < 10; j++) {
+      let cellDiv = document.createElement("div");
+      cellDiv.id = `p-c${j}-r${i}`;
+      playerBoard.appendChild(cellDiv);
+    }
+  }
+
+  // for computer
+  for (let i = 0; i < 10; i++) {
+    for (let j = 0; j < 10; j++) {
+      let cellDiv = document.createElement("div");
+      cellDiv.id = `c-c${j}-r${i}`;
+      computerBoard.appendChild(cellDiv);
+    }
+  }
+}
+
+// cache the grid cells!
+const playerBoardSquares = [...playerBoard.querySelectorAll("div")];
+const computerBoardSquares = [...computerBoard.querySelectorAll("div")];
+
+console.log(playerBoardSquares);
+console.log(computerBoardSquares);
+
+setupComputerShips(shipLengths);
+
+function setupComputerShips(shipLengthsArr) {
+  //for all ships
+  for (let i = 0; i <= shipLengthsArr.length; i++) {
+    let randomIdx = Math.floor(Math.random() * 100);
+    if (Math.random() < 0.5) {
+      for (let j = 0; j <= shipLengthsArr[i]; j++) {
+        computerTakenSquares.push(randomIdx + j);
+      }
+    } else {
+      for (let j = 0; j <= shipLengthsArr[i]; j++) {
+        computerTakenSquares.push(randomIdx);
+        randomIdx += 10;
+        //add guard here so that ships can't be added after 10 - length
+      }
+    }
+  }
+  console.log(computerTakenSquares);
+
+  // todo: create alg for vertical assignment of taken squares
+  // for horizontal ships, valid starting points are
+  // random between (0 and 10 - ship.dataset.length)
   //
-  playerBoard.forEach((cell, i) => {
-    let square = document.createElement("div");
-    square.innerText = i;
-    square.style.backgroundColor = "white";
-    cell.appendChild(square);
+  //
+  // for loop for rows adding ten to the valid starts each time
+  //starting at random indexes  (generate randon num), update computerTakenSquares with (indexes of taken squares)
+  // ships.forEach((ship) => console.log(ship.dataset.length));
+}
+
+//use state to update UI
+
+function renderBoard() {
+  boardState.forEach((colArr, colIdx) => {
+    // Iterate over the cells in the cur column (colArr)
+    colArr.forEach((cellVal, rowIdx) => {
+      const cellId = `c${colIdx}r${rowIdx}`;
+      const cellEl = document.getElementById(cellId);
+      //add style for dot indicating hit or miss
+    });
   });
 }
 
