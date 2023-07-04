@@ -8,6 +8,8 @@ const boardWidth = 10;
 let boardState;
 let validStart;
 let dragged = null;
+let selectedShip = null;
+let isHorizontal;
 
 let playerTakenSquares = []; //store the coordinates of where the ship divs have been dropped
 
@@ -19,15 +21,20 @@ const computerBoard = document.getElementById("computer-board");
 const ships = [...document.getElementsByClassName("ship")];
 const shipLengths = ships.map((ship) => ship.dataset.length);
 const msg = document.getElementById("msg");
+const rotateBtn = document.getElementById("rotate-btn");
+const shipContainer = document.getElementById("ship-container");
 
 /*----- event listeners -----*/
-ships.forEach((ship) =>
+ships.forEach((ship) => {
   ship.addEventListener("dragstart", (e) => {
     dragged = e.target;
-  })
-);
+  });
+  ship.addEventListener("click", (e) => selectShipToggle(e));
+});
 
 playerBoard.addEventListener("dragover", (e) => e.preventDefault());
+
+rotateBtn.addEventListener("click", (e) => rotateSelectedShip(selectedShip));
 
 // playerBoard.addEventListener("drop", (e) => {
 //   e.preventDefault();
@@ -43,6 +50,33 @@ function startGame() {
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   ];
   buildBoards();
+}
+
+function selectShipToggle(e) {
+  if (selectedShip === e.target) {
+    selectedShip.classList.toggle("ship-focus");
+    selectedShip = null;
+    return;
+  }
+  selectedShip = e.target;
+  ships.forEach((ship) => {
+    if (ship !== e.target) {
+      ship.classList.remove("ship-focus");
+    }
+  });
+  selectedShip.classList.toggle("ship-focus");
+}
+
+function rotateSelectedShip(selectedShip) {
+  if (!selectedShip) return;
+  // console.log("clicked");
+  let isRotated = selectedShip.style.transform;
+
+  selectedShip.style.transform =
+    isRotated === "rotate(90deg)" ? "rotate(0deg)" : "rotate(90deg)";
+  selectedShip.dataset.rotated =
+    selectedShip.dataset.rotated === "true" ? false : true;
+  // console.log(selectedShip.dataset.rotated);
 }
 
 function buildBoards() {
@@ -81,16 +115,22 @@ function handleDrop(e, dragged) {
   e.preventDefault();
   let dropIdx = playerBoardSquares.indexOf(e.target);
   let shipLength = dragged.getAttribute("data-length");
+  isHorizontal = dragged.getAttribute("data-rotated") === "true";
+  shipContainer.removeChild(dragged);
+
+  // console.log(isHorizontal);
+  // console.log(isHorizontal);
   // console.log(shipLength);
-  let isHorizontal = false;
+  // let isHorizontal = false; // update to read from the css
   setPlayerShip(dropIdx, shipLength, isHorizontal);
 }
 
 function setPlayerShip(startIdx, shipLength, isHorizontal) {
+  if (playerTakenSquares.length > 17) return;
   if (startIdx < 0 || startIdx > 99) startIdx = 0;
 
   while (playerTakenSquares.includes(startIdx)) {
-    startIdx -= 1;
+    startIdx -= 10;
     if (startIdx < 0) {
       startIdx = 99;
     }
@@ -105,7 +145,7 @@ function checkValidPlayerBounds(shipLength, startIdx, isHorizontal) {
       startIdx = 100 - shipLength;
     }
 
-    for (let k = 10; k < 100; k += 10) {
+    for (let k = 10; k <= 100; k += 10) {
       let lowerValidBound = k - 10;
       if (startIdx >= lowerValidBound && startIdx <= k) {
         if (startIdx > k - shipLength) {
@@ -113,7 +153,8 @@ function checkValidPlayerBounds(shipLength, startIdx, isHorizontal) {
         }
 
         while (playerTakenSquares.includes(startIdx)) {
-          startIdx--;
+          // startIdx -= 1;
+          console.log(startIdx);
           if (startIdx < 0) {
             startIdx = 99;
           }
@@ -127,7 +168,6 @@ function checkValidPlayerBounds(shipLength, startIdx, isHorizontal) {
     while (startIdx >= 110 - shipLength * 10) {
       startIdx -= 10;
     }
-
     updatePlayerTakenSquares(shipLength, startIdx, isHorizontal);
   }
 }
@@ -168,13 +208,13 @@ function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
     } else {
       let currentStart = validStart;
       for (let j = 0; j < shipLength; j++) {
+        // console.log(currentStart);
         playerTakenSquares.push(currentStart);
         currentStart += 10; // Increment the currentStart variable
       }
     }
   }
-  // console.log(playerBoardSquares);
-  // console.log(playerTakenSquares);
+
   renderBoard(playerTakenSquares, playerBoardSquares);
 }
 

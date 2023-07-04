@@ -21,14 +21,39 @@
           <h1>BATTLESHIP</h1>
           <p id="msg">Game message.</p>
           <button>START GAME</button><button>RESET GAME</button
-          ><button>ROTATE SHIP</button>
+          ><button id="rotate-btn">ROTATE SHIP</button>
         </div>
         <div id="ship-container">
-          <div class="ship destroyer" data-length="2" draggable="true"></div>
-          <div class="ship sub" data-length="3" draggable="true"></div>
-          <div class="ship cruiser" data-length="3" draggable="true"></div>
-          <div class="ship battleship" data-length="4" draggable="true"></div>
-          <div class="ship carrier" data-length="5" draggable="true"></div>
+          <div
+            class="ship destroyer"
+            data-length="2"
+            data-rotated="false"
+            draggable="true"
+          ></div>
+          <div
+            class="ship sub"
+            data-length="3"
+            data-rotated="false"
+            draggable="true"
+          ></div>
+          <div
+            class="ship cruiser"
+            data-length="3"
+            data-rotated="false"
+            draggable="true"
+          ></div>
+          <div
+            class="ship battleship"
+            data-length="4"
+            data-rotated="false"
+            draggable="true"
+          ></div>
+          <div
+            class="ship carrier"
+            data-length="5"
+            data-rotated="false"
+            draggable="true"
+          ></div>
         </div>
       </section>
     </div>
