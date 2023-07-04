@@ -43,12 +43,7 @@ rotateBtn.addEventListener("click", (e) => rotateSelectedShip(selectedShip));
 /*----- functions -----*/
 buildBoards();
 function startGame() {
-  boardState = [
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-  ];
+  msg.innerText = `Drag your ships onto the board!`;
   buildBoards();
 }
 
@@ -126,6 +121,7 @@ function handleDrop(e, dragged) {
 }
 
 function setPlayerShip(startIdx, shipLength, isHorizontal) {
+  console.log(startIdx);
   if (playerTakenSquares.length > 17) return;
   if (startIdx < 0 || startIdx > 99) startIdx = 0;
 
@@ -140,6 +136,7 @@ function setPlayerShip(startIdx, shipLength, isHorizontal) {
 }
 
 function checkValidPlayerBounds(shipLength, startIdx, isHorizontal) {
+  console.log(startIdx);
   if (isHorizontal) {
     if (startIdx > 100 - shipLength) {
       startIdx = 100 - shipLength;
@@ -147,8 +144,9 @@ function checkValidPlayerBounds(shipLength, startIdx, isHorizontal) {
 
     for (let k = 10; k <= 100; k += 10) {
       let lowerValidBound = k - 10;
-      if (startIdx >= lowerValidBound && startIdx <= k) {
+      if (startIdx >= lowerValidBound && startIdx < k) {
         if (startIdx > k - shipLength) {
+          console.log(startIdx);
           startIdx = k - shipLength;
         }
 
@@ -159,7 +157,7 @@ function checkValidPlayerBounds(shipLength, startIdx, isHorizontal) {
             startIdx = 99;
           }
         }
-
+        console.log(startIdx);
         updatePlayerTakenSquares(shipLength, startIdx, isHorizontal);
         return; // Exit the loop after finding a valid startIdx
       }
@@ -197,7 +195,7 @@ function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
   }
 
   if (isTaken) {
-    validStart -= 10;
+    isHorizontal ? (validStart -= 1) : (validStart -= 10);
     setPlayerShip(validStart, shipLength, isHorizontal);
   } else {
     if (isHorizontal) {
