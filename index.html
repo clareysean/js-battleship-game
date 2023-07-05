@@ -21,7 +21,8 @@
           <h1>BATTLESHIP</h1>
           <p id="msg">Drag all your ships onto the board to start a game!</p>
           <button id="reset-btn">RESET GAME</button
-          ><button id="rotate-btn">ROTATE SHIP</button>
+          ><button id="rotate-btn">ROTATE SHIP</button
+          ><button id="undo-btn">UNDO DROP</button>
         </div>
         <div id="ship-container">
           <div
@@ -29,30 +30,35 @@
             data-length="2"
             data-rotated="false"
             draggable="true"
+            style="height: 10vmin; width: 5vmin"
           ></div>
           <div
             class="ship sub"
             data-length="3"
             data-rotated="false"
             draggable="true"
+            style="height: 15vmin; width: 5vmin"
           ></div>
           <div
             class="ship cruiser"
             data-length="3"
             data-rotated="false"
             draggable="true"
+            style="height: 15vmin; width: 5vmin"
           ></div>
           <div
             class="ship battleship"
             data-length="4"
             data-rotated="false"
             draggable="true"
+            style="height: 20vmin; width: 5vmin"
           ></div>
           <div
             class="ship carrier"
             data-length="5"
             data-rotated="false"
             draggable="true"
+            style="height: 25vmin; width: 5vmin"
           ></div>
         </div>
       </section>

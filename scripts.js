@@ -23,6 +23,8 @@ let playerTurn = true;
 let compShotHistory = [];
 let playerShotHistory = [];
 let side = true;
+let draggedSquaresHistory = [];
+let draggedShipHistory = [];
 
 let playerTakenSquares = []; //store the coordinates of where the ship divs have been dropped
 
@@ -37,6 +39,7 @@ const msg = document.getElementById("msg");
 const rotateBtn = document.getElementById("rotate-btn");
 const shipContainer = document.getElementById("ship-container");
 const resetBtn = document.getElementById("reset-btn");
+const undoBtn = document.getElementById("undo-btn");
 
 /*----- functions -----*/
 buildBoards();
@@ -58,13 +61,20 @@ function selectShipToggle(e) {
 
 function rotateSelectedShip() {
   if (!selectedShip) return;
-  // console.log("clicked");
-  let angle = selectedShip.style.transform;
 
-  selectedShip.style.transform =
-    angle === "rotate(90deg)" ? "rotate(0deg)" : "rotate(90deg)";
+  let height = selectedShip.style.height;
+  let width = selectedShip.style.width;
+
+  selectedShip.style.height = width;
+  selectedShip.style.width = height;
+
+  // let angle = selectedShip.style.transform;
+
+  // selectedShip.style.transform =
+  //   angle === "rotate(90deg)" ? "rotate(0deg)" : "rotate(90deg)";
   selectedShip.dataset.rotated =
     selectedShip.dataset.rotated === "true" ? false : true;
+  console.log(selectedShip.dataset.rotated);
   // console.log(selectedShip.dataset.rotated);
 }
 
@@ -105,8 +115,13 @@ function startGame() {
   compShotHistory = [];
   playerTakenSquares = [];
   computerTakenSquares = [];
+  draggedSquaresHistory = [];
+  draggedShipHistory = [];
 
-  msg.innerText = `Drag all your ships onto the board to start a game!`;
+  msg.innerText = `~ Drag all your ships onto the board to start a game ~
+  
+  ~ Click a ship to select and rotate ~`;
+  undoBtn.addEventListener("click", undoDrop);
 
   shipLengths.forEach((ship) => setupComputerShips(ship));
   rotateBtn.addEventListener("click", rotateSelectedShip);
@@ -128,7 +143,11 @@ function startGame() {
     ship.addEventListener("dragstart", assignDragged);
     ship.addEventListener("click", selectShipToggle);
     shipContainer.appendChild(ship);
-    ship.style.transform = "rotate(0deg)";
+    if (ship.dataset.rotated === "true") {
+      selectedShip = ship;
+      rotateSelectedShip();
+      selectedShip = null;
+    }
     ship.classList.remove("ship-focus");
     ship.dataset.rotated = "false";
   });
@@ -149,6 +168,7 @@ function assignDragged(e) {
 
 function handleDrop(e) {
   console.log(dragged);
+  draggedShipHistory.push(dragged);
   e.preventDefault();
   let dropIdx = playerBoardSquares.indexOf(e.target);
 
@@ -247,7 +267,8 @@ function checkValidPlayerBounds(shipLength, startIdx, isHorizontal) {
 }
 
 function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
-  side = true;
+  let shipSquares = [];
+  // side = true;
   console.log(validStart);
   // console.log(shipLength, validStart, isHorizontal);
   let isTaken = true;
@@ -304,6 +325,7 @@ function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
     if (isHorizontal) {
       for (let j = 0; j < shipLength; j++) {
         playerTakenSquares.push(validStart + j);
+        shipSquares.push(validStart + j);
         console.log(`added squares to playerTaken array horizontal`);
         // console.log(validStart + j);
       }
@@ -313,13 +335,16 @@ function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
         // console.log(currentStart);
         console.log(`added squares to playerTaken array vertical`);
         playerTakenSquares.push(currentStart);
+        shipSquares.push(currentStart);
         currentStart += 10; // Increment the currentStart variable
       }
     }
     if (playerTakenSquares.length === 17) {
+      undoBtn.removeEventListener("click", undoDrop);
       msg.innerText = `Click a cell on the computer's board to take a shot!`;
       nextTurn(playerTurn);
     }
+    draggedSquaresHistory.push(shipSquares);
   }
 
   renderBoard(playerTakenSquares, playerBoardSquares);
@@ -427,9 +452,34 @@ function updateComputerTakenSquares(shipLength, validStart, horizontal) {
   }
 }
 
-// console.log(computerTakenSquares);
+function undoDrop() {
+  let shipSquaresToRemove =
+    draggedSquaresHistory[draggedSquaresHistory.length - 1];
+  console.log(`${playerTakenSquares} before filter`);
+  playerTakenSquares = playerTakenSquares.filter(
+    (squares) => !shipSquaresToRemove.includes(squares)
+  );
+  console.log(`${playerTakenSquares} after filter`);
+  draggedSquaresHistory.pop();
+  let putBackShip = draggedShipHistory.pop();
+  shipContainer.appendChild(putBackShip);
 
-//use state to update UI
+  renderBoardUndo(playerTakenSquares, playerBoardSquares);
+
+  //repaint the squares from the last array in draggedSquaresHistory
+
+  //append the last ship in draggedShipHistory back onto ship container
+}
+
+function renderBoardUndo(takenSquares, boardSquares) {
+  console.log(takenSquares);
+  boardSquares.forEach((square, i) => {
+    console.log(square);
+    if (!takenSquares.includes(i)) {
+      square.style.backgroundColor = "white";
+    }
+  });
+}
 
 function renderBoard(takenSquares, boardSquares) {
   takenSquares.forEach((idx) => {

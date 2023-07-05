@@ -102,7 +102,7 @@ h2 {
   border-radius: 1rem;
 }
 
-.destroyer {
+/* .destroyer {
   height: 10vmin;
   width: 5vmin;
 }
@@ -125,12 +125,37 @@ h2 {
 .carrier {
   height: 25vmin;
   width: 5vmin;
-}
+} */
 
-.rotated {
+/* .rotated {
   transform: rotate(90deg);
-}
+} */
 
 .ship-focus {
   border: 2px solid rgb(250, 179, 49);
 }
+
+/* .destroyer-rotated {
+  height: 5vmin;
+  width: 10vmin;
+}
+
+.sub-rotated {
+  height: 5vmin;
+  width: 15vmin;
+}
+
+.cruiser-rotated {
+  height: 5vmin;
+  width: 15vmin;
+}
+
+.battleship-rotated {
+  height: 5vmin;
+  width: 20vmin;
+}
+
+.carrier-rotated {
+  height: 5vmin;
+  width: 25vmin;
+} */
