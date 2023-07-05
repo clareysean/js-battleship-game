@@ -2,14 +2,27 @@
 const boardHeight = 10;
 const boardWidth = 10;
 
+const ranges = [
+  { min: 22, max: 27 },
+  { min: 32, max: 37 },
+  { min: 42, max: 47 },
+  { min: 52, max: 57 },
+  { min: 62, max: 67 },
+  { min: 72, max: 72 },
+];
+
 /*----- state variables -----*/
 
-//board state represent hits +1 and misses -1
 let boardState;
 let validStart;
 let dragged = null;
 let selectedShip = null;
 let isHorizontal;
+let playerHits;
+const computerHits = [];
+let playerTurn = true;
+const compShotHistory = [];
+let playerShotHistory = [];
 
 let playerTakenSquares = []; //store the coordinates of where the ship divs have been dropped
 
@@ -23,6 +36,7 @@ const shipLengths = ships.map((ship) => ship.dataset.length);
 const msg = document.getElementById("msg");
 const rotateBtn = document.getElementById("rotate-btn");
 const shipContainer = document.getElementById("ship-container");
+const resetBtn = document.getElementById("reset-btn");
 
 /*----- event listeners -----*/
 ships.forEach((ship) => {
@@ -36,13 +50,16 @@ playerBoard.addEventListener("dragover", (e) => e.preventDefault());
 
 rotateBtn.addEventListener("click", (e) => rotateSelectedShip(selectedShip));
 
+resetBtn.addEventListener("click", () => startGame());
+
 // playerBoard.addEventListener("drop", (e) => {
 //   e.preventDefault();
 //   console.log(e.target);
 // });
 /*----- functions -----*/
-buildBoards();
+startGame();
 function startGame() {
+  playerHits = 0;
   msg.innerText = `Drag your ships onto the board!`;
   buildBoards();
 }
@@ -121,10 +138,17 @@ function handleDrop(e, dragged) {
 }
 
 function setPlayerShip(startIdx, shipLength, isHorizontal) {
-  console.log(startIdx);
-  if (playerTakenSquares.length > 17) return;
+  // console.log(startIdx);
+  if (playerTakenSquares.length >= 17) return;
   if (startIdx < 0 || startIdx > 99) startIdx = 0;
-
+  if (isHorizontal) {
+    while (playerTakenSquares.includes(startIdx)) {
+      startIdx -= 1;
+      if (startIdx < 0) {
+        startIdx = 99;
+      }
+    }
+  }
   while (playerTakenSquares.includes(startIdx)) {
     startIdx -= 10;
     if (startIdx < 0) {
@@ -136,7 +160,7 @@ function setPlayerShip(startIdx, shipLength, isHorizontal) {
 }
 
 function checkValidPlayerBounds(shipLength, startIdx, isHorizontal) {
-  console.log(startIdx);
+  // console.log(startIdx);
   if (isHorizontal) {
     if (startIdx > 100 - shipLength) {
       startIdx = 100 - shipLength;
@@ -146,18 +170,18 @@ function checkValidPlayerBounds(shipLength, startIdx, isHorizontal) {
       let lowerValidBound = k - 10;
       if (startIdx >= lowerValidBound && startIdx < k) {
         if (startIdx > k - shipLength) {
-          console.log(startIdx);
+          // console.log(startIdx);
           startIdx = k - shipLength;
         }
 
         while (playerTakenSquares.includes(startIdx)) {
           // startIdx -= 1;
-          console.log(startIdx);
+          // console.log(startIdx);
           if (startIdx < 0) {
             startIdx = 99;
           }
         }
-        console.log(startIdx);
+        // console.log(startIdx);
         updatePlayerTakenSquares(shipLength, startIdx, isHorizontal);
         return; // Exit the loop after finding a valid startIdx
       }
@@ -210,6 +234,10 @@ function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
         playerTakenSquares.push(currentStart);
         currentStart += 10; // Increment the currentStart variable
       }
+    }
+    if (playerTakenSquares.length === 17) {
+      msg.innerText = `Click a cell on the computer's board to take a shot!`;
+      nextTurn(playerTurn);
     }
   }
 
@@ -316,7 +344,6 @@ function updateComputerTakenSquares(shipLength, validStart, horizontal) {
       }
     }
   }
-  renderBoard(computerTakenSquares, computerBoardSquares);
 }
 
 // console.log(computerTakenSquares);
@@ -327,6 +354,123 @@ function renderBoard(takenSquares, boardSquares) {
   takenSquares.forEach((idx) => {
     boardSquares[idx].style.backgroundColor = "var(--main-blue)";
   });
+}
+
+function handleShot(e) {
+  let shotIdx = computerBoardSquares.indexOf(e.target);
+  if (computerTakenSquares.includes(shotIdx)) {
+    computerBoardSquares[shotIdx].style.backgroundColor = "red";
+    msg.innerText = `It's a hit!`;
+    playerHits += 1;
+  } else {
+    msg.innerText = `Missed... `;
+    computerBoardSquares[shotIdx].style.backgroundColor = "gray";
+  }
+  checkWinner(playerHits, playerTurn);
+  playerTurn = false;
+
+  nextTurn(playerTurn);
+}
+
+function handleComputerShot(shot) {
+  let computerShotTarget = playerBoardSquares[shot];
+  console.log(shot);
+
+  if (playerTakenSquares.includes(shot)) {
+    computerHits.push(shot);
+    computerShotTarget.style.backgroundColor = "red";
+  } else {
+    computerShotTarget.style.backgroundColor = "gray";
+  }
+  playerTurn = true;
+  checkWinner(computerHits, playerTurn);
+  nextTurn(playerTurn);
+}
+
+function checkWinner(hits, playerTurn) {
+  // console.log(hits);
+  if (hits === 17) {
+    if (playerTurn) {
+      computerBoardSquares.forEach((square) =>
+        square.removeEventListener("click", handleShot)
+      );
+      msg.innerText = `Player wins! Reset game to play again.`;
+      return;
+    }
+    computerBoardSquares.forEach((square) =>
+      square.removeEventListener("click", handleShot)
+    );
+    msg.innerText = `Computer wins! Reset game to play again.`;
+  }
+}
+
+function computerShot() {
+  let shot;
+  let randomPrevHit;
+  let betterShot;
+  if (compShotHistory.length < 1) {
+    function randomFirstShot(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    let randomRange = ranges[Math.floor(Math.random() * ranges.length)];
+    shot = randomFirstShot(randomRange.min, randomRange.max);
+    compShotHistory.push(shot);
+    handleComputerShot(shot);
+    return;
+  }
+
+  if (computerHits.length === 0) {
+    randomPrevHit = Math.floor(Math.random() * 100);
+  } else if (computerHits.length === 1) {
+    randomPrevHit = computerHits[0];
+  } else {
+    console.log(computerHits);
+    randomPrevHit =
+      computerHits[Math.floor(Math.random() * computerHits.length)];
+    console.log(randomPrevHit);
+  }
+
+  let randomBoolean = Math.random() > 0.5;
+
+  if (randomBoolean) {
+    betterShot = Math.random() > 0.5 ? randomPrevHit + 1 : randomPrevHit + 10; //checking to right and below}
+  } else {
+    betterShot = Math.random() > 0.5 ? randomPrevHit - 1 : randomPrevHit - 10;
+  }
+  console.log(betterShot);
+  if (betterShot > 99 || betterShot < 0) {
+    betterShot = Math.floor(Math.random() * 100);
+  }
+  console.log(betterShot);
+  while (compShotHistory.includes(betterShot)) {
+    betterShot++;
+
+    if (betterShot > 99) {
+      betterShot = 0;
+    }
+  }
+  console.log(betterShot);
+  compShotHistory.push(betterShot);
+  console.log(compShotHistory);
+  handleComputerShot(betterShot);
+}
+
+function nextTurn(playerTurn) {
+  if (playerHits === 17 || computerHits === 17) return;
+  if (!playerTurn) {
+    console.log(`comp turn`);
+    computerBoardSquares.forEach((square) =>
+      square.removeEventListener("click", handleShot)
+    );
+    computerShot();
+    return;
+  }
+  console.log(`player turn`);
+  computerBoardSquares.forEach((square) =>
+    square.addEventListener("click", handleShot)
+  );
+  msg.innerText = `Click a cell on the computer's board to take a shot!`;
 }
 
 // todo
