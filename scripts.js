@@ -160,37 +160,52 @@ function handleDrop(e) {
 
 function setPlayerShip(startIdx, shipLength, isHorizontal) {
   if (playerTakenSquares.length >= 17) return;
-  // if (startIdx < 0 || startIdx > 99) startIdx = 0;
-
-  // while (playerTakenSquares.includes(startIdx)) {
-  //   startIdx--;
-  //   if (startIdx < 0) {
-  //     startIdx = 99;
-  //   }
-  // }
-  if (!isHorizontal) {
-    for (let i = 10; playerTakenSquares.includes(startIdx); i += 10) {
-      side ? (startIdx += i) : (startIdx -= i);
-      console.log(startIdx);
-      side = !side;
-      console.log(side);
-      if (startIdx < 0) {
-        startIdx = 0;
-      }
-    }
-  } else {
-    for (let i = 0; playerTakenSquares.includes(startIdx); i++) {
-      side ? (startIdx += i) : (startIdx -= i);
-      console.log(startIdx);
-      side = !side;
-      console.log(side);
-      if (startIdx < 0) {
-        startIdx = 0;
-      }
-    }
+  if (startIdx < 0) {
+    startIdx = 99;
+  } else if (startIdx > 99) {
+    startIdx = 0;
   }
 
-  console.log(startIdx);
+  while (playerTakenSquares.includes(startIdx)) {
+    startIdx--;
+    if (startIdx < 0) {
+      startIdx = 99;
+    }
+    console.log(`startidx decremented at top level`);
+  }
+  // console.log(isHorizontal);
+  // if (!isHorizontal) {
+  //   for (let i = 10; playerTakenSquares.includes(startIdx); i += 10) {
+  //     console.log(shipLength);
+  //     let verticalChecks = shipLength;
+  //     if (verticalChecks < 1) {
+  //       startIdx++;
+  //       break;
+  //     }
+  //     side ? (startIdx += i) : (startIdx -= i);
+  //     // console.log(startIdx);
+  //     side = !side;
+  //     // console.log(side);
+  //     verticalChecks--;
+  //     // console.log(verticalChecks);
+  //     if (startIdx < 0) {
+  //       console.log(`vertical adjusted`);
+  //       startIdx = 0;
+  //     }
+  //   }
+  // } else {
+  // for (let i = 0; playerTakenSquares.includes(startIdx); i++) {
+  //   side ? (startIdx += i) : (startIdx -= i);
+  //   console.log(startIdx);
+  //   side = !side;
+  //   console.log(side);
+  //   if (startIdx < 0) {
+  //     startIdx = 0;
+  //   }
+  // }
+  // }
+
+  // console.log(startIdx);
   checkValidPlayerBounds(shipLength, startIdx, isHorizontal);
 }
 
@@ -218,7 +233,7 @@ function checkValidPlayerBounds(shipLength, startIdx, isHorizontal) {
             startIdx = 99;
           }
         }
-        console.log(startIdx);
+        // console.log(startIdx);
         updatePlayerTakenSquares(shipLength, startIdx, isHorizontal);
         return;
       }
@@ -241,11 +256,11 @@ function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
     for (let j = 0; j < shipLength; j++) {
       if (!playerTakenSquares.includes(validStart + j)) {
         console.log(validStart + j);
-        console.log(`not taken`);
+        console.log(`hori not taken`);
         isTaken = false;
       } else {
         isTaken = true;
-        console.log(`taken`);
+        console.log(`hori taken`);
         break;
       }
     }
@@ -278,9 +293,12 @@ function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
 
     //   console.log(i);
     // }
-    console.log(playerTakenSquares);
-    isHorizontal ? validStart-- : (validStart -= 10);
+    // console.log(playerTakenSquares);
+    // console.log(isTaken);
 
+    isHorizontal ? validStart-- : (validStart -= 10);
+    console.log(`after ternary`);
+    console.log(validStart);
     setPlayerShip(validStart, shipLength, isHorizontal);
   } else {
     if (isHorizontal) {
