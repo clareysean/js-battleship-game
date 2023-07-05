@@ -13,16 +13,16 @@ const ranges = [
 
 /*----- state variables -----*/
 
-let boardState;
 let validStart;
 let dragged = null;
 let selectedShip = null;
 let isHorizontal;
-let playerHits;
-const computerHits = [];
+let playerHits = 0;
+let computerHits = [];
 let playerTurn = true;
-const compShotHistory = [];
+let compShotHistory = [];
 let playerShotHistory = [];
+let side = true;
 
 let playerTakenSquares = []; //store the coordinates of where the ship divs have been dropped
 
@@ -38,31 +38,8 @@ const rotateBtn = document.getElementById("rotate-btn");
 const shipContainer = document.getElementById("ship-container");
 const resetBtn = document.getElementById("reset-btn");
 
-/*----- event listeners -----*/
-ships.forEach((ship) => {
-  ship.addEventListener("dragstart", (e) => {
-    dragged = e.target;
-  });
-  ship.addEventListener("click", (e) => selectShipToggle(e));
-});
-
-playerBoard.addEventListener("dragover", (e) => e.preventDefault());
-
-rotateBtn.addEventListener("click", (e) => rotateSelectedShip(selectedShip));
-
-resetBtn.addEventListener("click", () => startGame());
-
-// playerBoard.addEventListener("drop", (e) => {
-//   e.preventDefault();
-//   console.log(e.target);
-// });
 /*----- functions -----*/
-startGame();
-function startGame() {
-  playerHits = 0;
-  msg.innerText = `Drag your ships onto the board!`;
-  buildBoards();
-}
+buildBoards();
 
 function selectShipToggle(e) {
   if (selectedShip === e.target) {
@@ -79,13 +56,13 @@ function selectShipToggle(e) {
   selectedShip.classList.toggle("ship-focus");
 }
 
-function rotateSelectedShip(selectedShip) {
+function rotateSelectedShip() {
   if (!selectedShip) return;
   // console.log("clicked");
-  let isRotated = selectedShip.style.transform;
+  let angle = selectedShip.style.transform;
 
   selectedShip.style.transform =
-    isRotated === "rotate(90deg)" ? "rotate(0deg)" : "rotate(90deg)";
+    angle === "rotate(90deg)" ? "rotate(0deg)" : "rotate(90deg)";
   selectedShip.dataset.rotated =
     selectedShip.dataset.rotated === "true" ? false : true;
   // console.log(selectedShip.dataset.rotated);
@@ -112,55 +89,113 @@ function buildBoards() {
   }
 }
 
-// cache the grid cells!
 const playerBoardSquares = [...playerBoard.querySelectorAll("div")];
 const computerBoardSquares = [...computerBoard.querySelectorAll("div")];
 
-playerBoardSquares.forEach((square) => {
-  square.addEventListener("dragover", (e) => {
-    e.preventDefault();
-  }),
-    square.addEventListener("drop", (e) => handleDrop(e, dragged));
-});
+startGame();
 
-function handleDrop(e, dragged) {
+function startGame() {
+  selectedShip = null;
+  dragged = null;
+  isHorizontal = false;
+  playerTurn = true;
+  playerHits = 0;
+  computerHits = [];
+  playerShotHistory = [];
+  compShotHistory = [];
+  playerTakenSquares = [];
+  computerTakenSquares = [];
+
+  msg.innerText = `Drag all your ships onto the board to start a game!`;
+
+  shipLengths.forEach((ship) => setupComputerShips(ship));
+  rotateBtn.addEventListener("click", rotateSelectedShip);
+
+  resetBtn.addEventListener("click", startGame);
+
+  playerBoardSquares.forEach(
+    (square) => (square.style.backgroundColor = "white")
+  );
+  computerBoardSquares.forEach(
+    (square) => (square.style.backgroundColor = "white")
+  );
+  computerBoardSquares.forEach((square) =>
+    square.addEventListener("click", handleShot)
+  );
+  playerBoard.addEventListener("dragover", preventDragoverDefault);
+
+  ships.forEach((ship) => {
+    ship.addEventListener("dragstart", assignDragged);
+    ship.addEventListener("click", selectShipToggle);
+    shipContainer.appendChild(ship);
+    ship.style.transform = "rotate(0deg)";
+    ship.classList.remove("ship-focus");
+    ship.dataset.rotated = "false";
+  });
+
+  playerBoardSquares.forEach((square) => {
+    square.addEventListener("dragover", preventDragoverDefault);
+    square.addEventListener("drop", handleDrop);
+  });
+}
+
+function preventDragoverDefault(e) {
+  e.preventDefault();
+}
+
+function assignDragged(e) {
+  dragged = e.target;
+}
+
+function handleDrop(e) {
+  console.log(dragged);
   e.preventDefault();
   let dropIdx = playerBoardSquares.indexOf(e.target);
+
   let shipLength = dragged.getAttribute("data-length");
   isHorizontal = dragged.getAttribute("data-rotated") === "true";
-  shipContainer.removeChild(dragged);
-
-  // console.log(isHorizontal);
-  // console.log(isHorizontal);
-  // console.log(shipLength);
-  // let isHorizontal = false; // update to read from the css
   setPlayerShip(dropIdx, shipLength, isHorizontal);
+  shipContainer.removeChild(dragged);
 }
 
 function setPlayerShip(startIdx, shipLength, isHorizontal) {
-  // console.log(startIdx);
   if (playerTakenSquares.length >= 17) return;
-  if (startIdx < 0 || startIdx > 99) startIdx = 0;
-  if (isHorizontal) {
-    while (playerTakenSquares.includes(startIdx)) {
-      startIdx -= 1;
+  // if (startIdx < 0 || startIdx > 99) startIdx = 0;
+
+  // while (playerTakenSquares.includes(startIdx)) {
+  //   startIdx--;
+  //   if (startIdx < 0) {
+  //     startIdx = 99;
+  //   }
+  // }
+  if (!isHorizontal) {
+    for (let i = 10; playerTakenSquares.includes(startIdx); i += 10) {
+      side ? (startIdx += i) : (startIdx -= i);
+      console.log(startIdx);
+      side = !side;
+      console.log(side);
       if (startIdx < 0) {
-        startIdx = 99;
+        startIdx = 0;
+      }
+    }
+  } else {
+    for (let i = 0; playerTakenSquares.includes(startIdx); i++) {
+      side ? (startIdx += i) : (startIdx -= i);
+      console.log(startIdx);
+      side = !side;
+      console.log(side);
+      if (startIdx < 0) {
+        startIdx = 0;
       }
     }
   }
-  while (playerTakenSquares.includes(startIdx)) {
-    startIdx -= 10;
-    if (startIdx < 0) {
-      startIdx = 99;
-    }
-  }
 
+  console.log(startIdx);
   checkValidPlayerBounds(shipLength, startIdx, isHorizontal);
 }
 
 function checkValidPlayerBounds(shipLength, startIdx, isHorizontal) {
-  // console.log(startIdx);
+  // console.log(shipLength, startIdx, isHorizontal);
   if (isHorizontal) {
     if (startIdx > 100 - shipLength) {
       startIdx = 100 - shipLength;
@@ -175,15 +210,17 @@ function checkValidPlayerBounds(shipLength, startIdx, isHorizontal) {
         }
 
         while (playerTakenSquares.includes(startIdx)) {
-          // startIdx -= 1;
-          // console.log(startIdx);
+          startIdx -= 1;
+          console.log(startIdx);
           if (startIdx < 0) {
+            startIdx = 0;
+          } else if (startIdx > 99) {
             startIdx = 99;
           }
         }
-        // console.log(startIdx);
+        console.log(startIdx);
         updatePlayerTakenSquares(shipLength, startIdx, isHorizontal);
-        return; // Exit the loop after finding a valid startIdx
+        return;
       }
     }
   } else {
@@ -195,13 +232,20 @@ function checkValidPlayerBounds(shipLength, startIdx, isHorizontal) {
 }
 
 function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
+  side = true;
+  console.log(validStart);
+  // console.log(shipLength, validStart, isHorizontal);
   let isTaken = true;
+  //check availability
   if (isHorizontal) {
     for (let j = 0; j < shipLength; j++) {
       if (!playerTakenSquares.includes(validStart + j)) {
+        console.log(validStart + j);
+        console.log(`not taken`);
         isTaken = false;
       } else {
         isTaken = true;
+        console.log(`taken`);
         break;
       }
     }
@@ -210,8 +254,10 @@ function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
     for (let j = 0; j < shipLength; j++) {
       if (!playerTakenSquares.includes(currentStart)) {
         isTaken = false;
+        console.log(`vertical not taken`);
       } else {
         isTaken = true;
+        console.log(`Vertical taken`);
         break;
       }
       currentStart += 10; // Increment the currentStart variable instead of modifying validStart
@@ -219,18 +265,35 @@ function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
   }
 
   if (isTaken) {
-    isHorizontal ? (validStart -= 1) : (validStart -= 10);
+    // for (let i = 0; i < 100; i++) {
+    //   side ? (validStart += i) : (validStart -= i);
+    //   console.log(validStart);
+    //   side = !side;
+    //   console.log(side);
+    //   if (validStart < 0) {
+    //     validStart = 0;
+    //   } else if (validStart > 99) {
+    //     validStart = 99;
+    //   }
+
+    //   console.log(i);
+    // }
+    console.log(playerTakenSquares);
+    isHorizontal ? validStart-- : (validStart -= 10);
+
     setPlayerShip(validStart, shipLength, isHorizontal);
   } else {
     if (isHorizontal) {
       for (let j = 0; j < shipLength; j++) {
         playerTakenSquares.push(validStart + j);
+        console.log(`added squares to playerTaken array horizontal`);
         // console.log(validStart + j);
       }
     } else {
       let currentStart = validStart;
       for (let j = 0; j < shipLength; j++) {
         // console.log(currentStart);
+        console.log(`added squares to playerTaken array vertical`);
         playerTakenSquares.push(currentStart);
         currentStart += 10; // Increment the currentStart variable
       }
@@ -358,15 +421,19 @@ function renderBoard(takenSquares, boardSquares) {
 
 function handleShot(e) {
   let shotIdx = computerBoardSquares.indexOf(e.target);
-  if (computerTakenSquares.includes(shotIdx)) {
+  if (playerShotHistory.includes(shotIdx)) {
+    msg.innerText = `Click an empty square to take a shot...`;
+    return;
+  } else if (computerTakenSquares.includes(shotIdx)) {
     computerBoardSquares[shotIdx].style.backgroundColor = "red";
     msg.innerText = `It's a hit!`;
-    playerHits += 1;
+    playerHits++;
   } else {
     msg.innerText = `Missed... `;
     computerBoardSquares[shotIdx].style.backgroundColor = "gray";
   }
-  checkWinner(playerHits, playerTurn);
+  playerShotHistory.push(shotIdx);
+  checkWinner(playerHits, computerHits);
   playerTurn = false;
 
   nextTurn(playerTurn);
@@ -383,24 +450,19 @@ function handleComputerShot(shot) {
     computerShotTarget.style.backgroundColor = "gray";
   }
   playerTurn = true;
-  checkWinner(computerHits, playerTurn);
+  checkWinner(playerHits, computerHits);
   nextTurn(playerTurn);
 }
 
-function checkWinner(hits, playerTurn) {
+function checkWinner(playerHits, computerHits) {
   // console.log(hits);
-  if (hits === 17) {
-    if (playerTurn) {
-      computerBoardSquares.forEach((square) =>
-        square.removeEventListener("click", handleShot)
-      );
-      msg.innerText = `Player wins! Reset game to play again.`;
-      return;
-    }
-    computerBoardSquares.forEach((square) =>
-      square.removeEventListener("click", handleShot)
-    );
+  console.log(playerHits);
+  if (playerHits === 17) {
+    msg.innerText = `Player wins! Reset game to play again.`;
+    cleanup();
+  } else if (computerHits.length === 17) {
     msg.innerText = `Computer wins! Reset game to play again.`;
+    cleanup();
   }
 }
 
@@ -444,20 +506,20 @@ function computerShot() {
   }
   console.log(betterShot);
   while (compShotHistory.includes(betterShot)) {
-    betterShot++;
+    betterShot = Math.floor(Math.random() * 100);
 
     if (betterShot > 99) {
       betterShot = 0;
     }
   }
-  console.log(betterShot);
+  // console.log(betterShot);
   compShotHistory.push(betterShot);
-  console.log(compShotHistory);
+  // console.log(compShotHistory);
   handleComputerShot(betterShot);
 }
 
 function nextTurn(playerTurn) {
-  if (playerHits === 17 || computerHits === 17) return;
+  if (playerHits === 17 || computerHits.length === 17) return;
   if (!playerTurn) {
     console.log(`comp turn`);
     computerBoardSquares.forEach((square) =>
@@ -473,112 +535,22 @@ function nextTurn(playerTurn) {
   msg.innerText = `Click a cell on the computer's board to take a shot!`;
 }
 
+function cleanup() {
+  computerBoardSquares.forEach((square) =>
+    square.removeEventListener("click", handleShot)
+  );
+  ships.forEach((ship) => {
+    ship.removeEventListener("dragstart", (e) => {
+      dragged = e.target;
+    });
+  });
+}
 // todo
-// fix build Boards to actually set up grid
 
-//     Battleship:
+// refactor place pieces functions to be more reusable, worth it??
 
-//     - Two ten by ten grids
+//UI fixes:
 
-//     - one represents hidden computer board, other is player board
+//instead of using transform for rotate, change piece shape. create custom rotated class for each ship
 
-//     - create with two containers with 10x10 css grids
-
-//     - append squares to containers at each grid position using for loops to assign their position based on index. Outer of loop takes row, inner takes column;
-
-//    Pieces:
-
-//      - Carrier (5)
-
-//      - Battleship (4)
-
-//      - Cruiser (3)
-
-//      - Submarine (3)
-
-//      - Destroyer (2)
-
-//      Class Ship = {
-//       constructor(name, length) {
-//         this.name = name;
-//         This.length = length;
-//    }
-
-//    State:
-
-//     - Hits (number) on boardState
-
-//     - misses (number) on boardState
-
-//     - takenSquares (update when ship dropped)
-
-//     - Sunk Ships (a list on screen generated by an array)
-
-//     - possible to hold hit, miss, or neutral state in an array called boardState.
-
-//     - update board at end of each turn using boardState array to update styles of divs corresponding in index.
-
-//     - structure of boardState and boardSquares (DOM cached DOM squares(divs)) must match in structure. Array of arrays
-
-//    Build board:
-
-//     - 10x for loop, assign col id
-//     - 10x inner loop assign row id
-
-//     - figure out where event listeners go to detect and check valid drop on rows and columns
-
-//    - event is on the div itself, which has an index within the boardSquares cached array. I need to understand the structure of the event.target object and how to check available cols based on the indexOf the event.target in boardSquares
-
-//    Setup:
-
-//     - Drag and drop pieces onto game board
-
-//     - Piece can be horizontal or vertical based on isHorizontal
-
-//     - Must be dropped onto empty squares (check e.target squares against taken squares)
-
-//     - Must not go over board boundary (check using board square id?.
-
-//        handleDrop()
-
-//       If isHorizontal
-
-//         - startIdx = boardSquares.indexOf(e.target)
-//         - if startIdx + ship.length > 10, invalid drop
-
-//       If !isHorizontal
-
-//         - check if ship.length + column index > 10
-
-//               - this means that each square will be programatically assigned a rowID colID as a co
-
-//     - Once Total taken squares > 17 (34 if adding computer taken squares to array), game starts
-
-//    Player Play:
-
-//     - Player goes first
-
-//     - Click on a square on computer grid
-
-//     - If hit fire hit function and display `it's a hit!` -> update Dom with red coloured divs(square) for hit square -> check sink -> - otherwise miss, white square
-
-//     - check win
-
-//    Computer Play:
-
-//     - Use either random num or alg to pick a square on player board
-
-//     - use set timeout to simulate thinking
-
-//     - update dom to show hits or misses -> check sink -
-
-//     - check win
-
-//    issues:
-
-//    - How to store values of Ships (start in a div at side of screen, dragged onto board.)
-//         - ships are groups of divs that span a section on the grid that matches their own dimensions
-//         - ship Divs will have hard coded id corresponding to their name
-
-//    - how to check hit:
-//         - Use taken squares? (Data associated with ship will be color of div based on hit status, position on board
+// more custom css and transitions
