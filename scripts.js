@@ -11,6 +11,8 @@ const ranges = [
   { min: 72, max: 72 },
 ];
 
+const guesses = [1, -1, 10, -10];
+
 const playerShipData = [
   { name: "destroyer", occupiedSquares: null, hits: 0, length: 2, sunk: false },
   { name: "sub", occupiedSquares: null, hits: 0, length: 3, sunk: false },
@@ -595,10 +597,11 @@ function handleShot(e) {
 
 function handleComputerShot(shot) {
   let computerShotTarget = playerBoardSquares[shot];
-  // console.log(shot);
+  console.log(shot);
 
   if (playerTakenSquares.includes(shot)) {
     computerHits.push(shot);
+    console.log(`pushed a hit in compHandler` + shot);
     computerShotTarget.style.backgroundColor = "red";
     playerShipData.forEach((ship) => {
       if (ship.occupiedSquares.includes(shot)) {
@@ -633,10 +636,10 @@ function computerShot() {
   let prevHit;
   let betterShot = null;
 
-  let guesses = [1, -1, 10, -10];
   let randomGuessIdx = Math.floor(Math.random() * 4);
   // let checkCounter = 0;
-
+  console.log(`top level compShot History is ` + compShotHistory);
+  console.log(`this is the last hit at the top level:` + lastHit);
   if (compShotHistory.length < 1) {
     function randomFirstShot(min, max) {
       return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -650,132 +653,174 @@ function computerShot() {
     return;
   }
 
-  if (computerHits.length === 0) {
+  if (computerHits.length < 1) {
     prevHit = Math.floor(Math.random() * 100);
-  } else if (computerHits.length === 1) {
+    console.log(
+      `prevHit has been randomized because there are no hits: it is` + prevHit
+    );
+  } else if (computerHits.length > 0 && computerHits.length < 2) {
     prevHit = computerHits[0];
+    console.log(
+      `only one prev hit so it's the first in the comp hits array` + prevHit
+    );
   } else {
     prevHit = lastHit;
+    console.log(`more than one hit so assigned last hit to prevHit` + prevHit);
+    console.log(computerHits);
   }
-
-  if (prevHit + 1 <= 99 && computerHits.includes(prevHit + 1)) {
+  console.log(
+    `this is the guaranteed last hit and should match randomized or other` +
+      prevHit
+  );
+  if (!betterShot && prevHit + 1 <= 99 && computerHits.includes(prevHit + 1)) {
     betterShot = prevHit + 2;
     console.log(`following right trend`);
+    console.log(betterShot);
   }
-  if (prevHit - 1 >= 0 && computerHits.includes(prevHit - 1)) {
+  if (!betterShot && prevHit - 1 >= 0 && computerHits.includes(prevHit - 1)) {
     betterShot = prevHit - 2;
     console.log(`following left trend`);
+    console.log(betterShot);
   }
-  if (prevHit + 10 <= 99 && computerHits.includes(prevHit + 10)) {
+  if (
+    !betterShot &&
+    prevHit + 10 <= 99 &&
+    computerHits.includes(prevHit + 10)
+  ) {
     betterShot = prevHit + 20;
     console.log(`following down trend`);
+    console.log(betterShot);
   }
-  if (prevHit - 10 >= 0 && computerHits.includes(prevHit - 10)) {
+  if (!betterShot && prevHit - 10 >= 0 && computerHits.includes(prevHit - 10)) {
     betterShot = prevHit - 20;
     console.log(`following up trend`);
-  }
-
-  if (!betterShot || (betterShot && compShotHistory.includes(betterShot))) {
-    // betterShot = prevHit + guesses[randomGuessIdx];
-    // if(compShotHistory.includes(betterShot))
-    console.log(prevHit);
-    for (let i = 0; i < 4; i++) {
-      console.log(i);
-      betterShot = prevHit + guesses[i];
-      if (!compShotHistory.includes(betterShot)) {
-        console.log("found adjacent guess not in history in loop");
-        break;
-      }
-    }
-    console.log(prevHit);
     console.log(betterShot);
   }
 
-  if (betterShot > 99 || betterShot < 0 || !betterShot) {
-    console.log(`randomized after conditionals, outside of range or null`);
-    // console.log(lastHit);
-
-    // let randomBoolean = Math.random() > 0.5;
-
-    //computerHits is our array of past hits. prevHit is always the last value
-
-    // right now it will always find a hit within a 4 square radius
-
-    // try logging before conditionals and seeing which are hit
-
-    // function checkBetterShots(checkCounter) {
-    //   playerShipData.forEach((ship) => {
-    //     let sideCheck = 1;
-    //     console.log(ship.occupiedSquares);
-    //     console.log(prevHit);
-    //     if (
-    //       !betterShot &&
-    //       ship.occupiedSquares.includes(prevHit + sideCheck + checkCounter) &&
-    //       !compShotHistory.includes(prevHit + sideCheck + checkCounter)
-    //     ) {
-    //       betterShot = prevHit + sideCheck + checkCounter;
-
-    //     }
-
-    //     if (
-    //       !betterShot &&
-    //       ship.occupiedSquares.includes(
-    //         prevHit + sideCheck * -1 + checkCounter * -1
-    //       ) &&
-    //       !compShotHistory.includes(prevHit + sideCheck * -1 + checkCounter * -1)
-    //     ) {
-    //       betterShot = prevHit + sideCheck * -1 + checkCounter * -1;
-
-    //     }
-
-    //     if (
-    //       !betterShot &&
-    //       ship.occupiedSquares.includes(
-    //         prevHit + sideCheck * 10 + checkCounter * 10
-    //       ) &&
-    //       !compShotHistory.includes(prevHit + sideCheck * 10 + checkCounter * 10)
-    //     ) {
-    //       betterShot = prevHit + sideCheck * 10 + checkCounter * 10;
-
-    //     }
-
-    //     sideCheck *= -1;
-    //     checkCounter *= -1;
-    //     let betterSide = sideCheck * 10;
-
-    //     if (
-    //       !betterShot &&
-    //       ship.occupiedSquares.includes(
-    //         prevHit + betterSide + checkCounter * 10
-    //       ) &&
-    //       !compShotHistory.includes(prevHit + betterSide + checkCounter * 10)
-    //     ) {
-    //       betterShot = prevHit + betterSide + checkCounter * 10;
-
-    //     }
-    //   });
-    // }
-    // if (randomBoolean) {
-    //   betterShot = Math.random() > 0.5 ? randomPrevHit + 1 : randomPrevHit + 10; //checking to right and below}
-    // } else {
-    //   betterShot = Math.random() > 0.5 ? randomPrevHit - 1 : randomPrevHit - 10;
-    // }
-
-    betterShot = Math.floor(Math.random() * 100);
+  if (!betterShot || compShotHistory.includes(betterShot)) {
+    // betterShot = prevHit + guesses[randomGuessIdx];
+    // if(compShotHistory.includes(betterShot))
+    console.log(
+      `shot history just before LOOP: shot was in history =>` + compShotHistory
+    );
+    console.log(
+      `value of betterShot after conditionals after guard before LOOP: ` +
+        betterShot
+    );
+    console.log(`hits just before LOOP` + computerHits);
+    // checks for empty squares
+    console.log(
+      `no adjacent hits to follow so` + prevHit + `is prevHit before LOOP`
+    );
+    for (let i = 0; i < 4; i++) {
+      console.log(i);
+      console.log(`guess values are` + guesses[i]);
+      betterShot = prevHit + guesses[i];
+      if (
+        !compShotHistory.includes(betterShot + guesses[i]) &&
+        betterShot >= 0 &&
+        betterShot <= 99
+      ) {
+        console.log("found adjacent guess not in history, within LOOP");
+        console.log(`prevHit was adjusted by ` + guesses[i]);
+        break;
+      }
+    }
+    console.log(prevHit + `is prevHit after LOOP`);
+    console.log(betterShot + `is BetterShot (adjusted prevHit after LOOP)`);
   }
 
-  while (compShotHistory.includes(betterShot)) {
+  while (
+    betterShot > 99 ||
+    betterShot < 0 ||
+    !betterShot ||
+    compShotHistory.includes(betterShot)
+  ) {
+    console.log(
+      `No available guess and around square - looping random (range overrun of boxed in) - - this is after unsuccessfully following trend and checking perimiter `
+    );
     betterShot = Math.floor(Math.random() * 100);
-    console.log(`randomized final, betterShot is in history`);
-    // if (betterShot > 99) {
-    //   betterShot = 0;
-    // }
+    console.log(`value of betterShot in loop:` + betterShot);
   }
-  // console.log(betterShot);
+  // console.log(lastHit);
+
+  // let randomBoolean = Math.random() > 0.5;
+
+  //computerHits is our array of past hits. prevHit is always the last value
+
+  // right now it will always find a hit within a 4 square radius
+
+  // try logging before conditionals and seeing which are hit
+
+  // function checkBetterShots(checkCounter) {
+  //   playerShipData.forEach((ship) => {
+  //     let sideCheck = 1;
+  //     console.log(ship.occupiedSquares);
+  //     console.log(prevHit);
+  //     if (
+  //       !betterShot &&
+  //       ship.occupiedSquares.includes(prevHit + sideCheck + checkCounter) &&
+  //       !compShotHistory.includes(prevHit + sideCheck + checkCounter)
+  //     ) {
+  //       betterShot = prevHit + sideCheck + checkCounter;
+
+  //     }
+
+  //     if (
+  //       !betterShot &&
+  //       ship.occupiedSquares.includes(
+  //         prevHit + sideCheck * -1 + checkCounter * -1
+  //       ) &&
+  //       !compShotHistory.includes(prevHit + sideCheck * -1 + checkCounter * -1)
+  //     ) {
+  //       betterShot = prevHit + sideCheck * -1 + checkCounter * -1;
+
+  //     }
+
+  //     if (
+  //       !betterShot &&
+  //       ship.occupiedSquares.includes(
+  //         prevHit + sideCheck * 10 + checkCounter * 10
+  //       ) &&
+  //       !compShotHistory.includes(prevHit + sideCheck * 10 + checkCounter * 10)
+  //     ) {
+  //       betterShot = prevHit + sideCheck * 10 + checkCounter * 10;
+
+  //     }
+
+  //     sideCheck *= -1;
+  //     checkCounter *= -1;
+  //     let betterSide = sideCheck * 10;
+
+  //     if (
+  //       !betterShot &&
+  //       ship.occupiedSquares.includes(
+  //         prevHit + betterSide + checkCounter * 10
+  //       ) &&
+  //       !compShotHistory.includes(prevHit + betterSide + checkCounter * 10)
+  //     ) {
+  //       betterShot = prevHit + betterSide + checkCounter * 10;
+
+  //     }
+  //   });
+  // }
+  // if (randomBoolean) {
+  //   betterShot = Math.random() > 0.5 ? randomPrevHit + 1 : randomPrevHit + 10; //checking to right and below}
+  // } else {
+  //   betterShot = Math.random() > 0.5 ? randomPrevHit - 1 : randomPrevHit - 10;
+  // }
+
+  // betterShot = Math.floor(Math.random() * 100);
+  // console.log(`randomized final, betterShot is in history`);
+  // if (betterShot > 99) {
+  //   betterShot = 0;
+  // }
+
+  console.log(`betterShot just before pushing to history` + betterShot);
   compShotHistory.push(betterShot);
-  // console.log(compShotHistory);
+  console.log(`history with new shot added end of function` + compShotHistory);
   console.log(
-    `last stage in computerShot, this is passed to handle` + betterShot
+    `last stage in computerShot, this is passed to handle: ` + betterShot
   );
   handleComputerShot(betterShot);
 }
@@ -792,7 +837,7 @@ function nextTurn(playerTurn) {
     setTimeout(function () {
       computerShot();
       thinkingMsg.innerText = "";
-    }, 800);
+    }, 100);
 
     return;
   }

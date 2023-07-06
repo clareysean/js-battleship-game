@@ -119,11 +119,12 @@ h2 {
   display: inline-block;
 }
 #ship-lists {
-  height: 50vmin;
+  height: 55vmin;
   width: 40vmin;
   display: grid;
   grid-template-columns: 1fr 1fr;
   border: 2px solid green;
+  background-color: var(--secondary-blue);
   /* margin: 3rem 0 0 5rem; */
 }
 
