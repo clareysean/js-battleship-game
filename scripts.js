@@ -632,6 +632,9 @@ function computerShot() {
   let shot;
   let prevHit;
   let betterShot = null;
+
+  let guesses = [1, -1, 10, -10];
+  let randomGuessIdx = Math.floor(Math.random() * 4);
   // let checkCounter = 0;
 
   if (compShotHistory.length < 1) {
@@ -643,6 +646,7 @@ function computerShot() {
     shot = randomFirstShot(randomRange.min, randomRange.max);
     compShotHistory.push(shot);
     handleComputerShot(shot);
+    console.log(`first computerShot`);
     return;
   }
 
@@ -654,102 +658,115 @@ function computerShot() {
     prevHit = lastHit;
   }
 
-  // console.log(lastHit);
+  if (prevHit + 1 <= 99 && computerHits.includes(prevHit + 1)) {
+    betterShot = prevHit + 2;
+    console.log(`following right trend`);
+  }
+  if (prevHit - 1 >= 0 && computerHits.includes(prevHit - 1)) {
+    betterShot = prevHit - 2;
+    console.log(`following left trend`);
+  }
+  if (prevHit + 10 <= 99 && computerHits.includes(prevHit + 10)) {
+    betterShot = prevHit + 20;
+    console.log(`following down trend`);
+  }
+  if (prevHit - 10 >= 0 && computerHits.includes(prevHit - 10)) {
+    betterShot = prevHit - 20;
+    console.log(`following up trend`);
+  }
 
-  // let randomBoolean = Math.random() > 0.5;
-
-  for (let i = 0; i < 5; i++) {
-    if (betterShot) break;
+  if (!betterShot || (betterShot && compShotHistory.includes(betterShot))) {
+    // betterShot = prevHit + guesses[randomGuessIdx];
+    // if(compShotHistory.includes(betterShot))
     console.log(prevHit);
-    console.log(i);
-    checkBetterShots(i);
+    for (let i = 0; i < 4; i++) {
+      console.log(i);
+      betterShot = prevHit + guesses[i];
+      if (!compShotHistory.includes(betterShot)) {
+        console.log("found adjacent guess not in history in loop");
+        break;
+      }
+    }
+    console.log(prevHit);
+    console.log(betterShot);
   }
-
-  // betterShot is still able to be assigned to something that is not a hit
-
-  // try logging before conditionals and seeing which are hit
-
-  function checkBetterShots(checkCounter) {
-    playerShipData.forEach((ship) => {
-      let sideCheck = 1;
-      console.log(ship.occupiedSquares);
-      console.log(prevHit);
-      if (
-        !betterShot && // Add this condition to check if betterShot is already set
-        ship.occupiedSquares.includes(prevHit + sideCheck + checkCounter) &&
-        !compShotHistory.includes(prevHit + sideCheck + checkCounter)
-      ) {
-        betterShot = prevHit + sideCheck + checkCounter;
-        // console.log(`first conditional`);
-        // console.log(sideCheck);
-        // console.log(prevHit);
-        // console.log(ship.occupiedSquares);
-        // console.log(betterShot);
-      }
-
-      if (
-        !betterShot && // Add this condition to check if betterShot is already set
-        ship.occupiedSquares.includes(
-          prevHit + sideCheck * -1 + checkCounter * -1
-        ) &&
-        !compShotHistory.includes(prevHit + sideCheck * -1 + checkCounter * -1)
-      ) {
-        betterShot = prevHit + sideCheck * -1 + checkCounter * -1;
-        // console.log(`second conditional`);
-        // console.log(sideCheck);
-        // console.log(prevHit);
-        // console.log(ship.occupiedSquares);
-        // console.log(betterShot);
-      }
-
-      if (
-        !betterShot && // Add this condition to check if betterShot is already set
-        ship.occupiedSquares.includes(
-          prevHit + sideCheck * 10 + checkCounter * 10
-        ) &&
-        !compShotHistory.includes(prevHit + sideCheck * 10 + checkCounter * 10)
-      ) {
-        betterShot = prevHit + sideCheck * 10 + checkCounter * 10;
-        // console.log(`third conditional`);
-        // console.log(sideCheck);
-        // console.log(prevHit);
-        // console.log(ship.occupiedSquares);
-        // console.log(betterShot);
-      }
-
-      sideCheck *= -1;
-      checkCounter *= -1;
-      let betterSide = sideCheck * 10;
-
-      if (
-        !betterShot && // Add this condition to check if betterShot is already set
-        ship.occupiedSquares.includes(
-          prevHit + betterSide + checkCounter * 10
-        ) &&
-        !compShotHistory.includes(prevHit + betterSide + checkCounter * 10)
-      ) {
-        betterShot = prevHit + betterSide + checkCounter * 10;
-        // console.log(`fourth conditional`);
-        // console.log(sideCheck);
-        // console.log(prevHit);
-        // console.log(ship.occupiedSquares);
-        // console.log(betterShot);
-      }
-    });
-  }
-  // if (randomBoolean) {
-  //   betterShot = Math.random() > 0.5 ? randomPrevHit + 1 : randomPrevHit + 10; //checking to right and below}
-  // } else {
-  //   betterShot = Math.random() > 0.5 ? randomPrevHit - 1 : randomPrevHit - 10;
-  // }
 
   if (betterShot > 99 || betterShot < 0 || !betterShot) {
+    console.log(`randomized after conditionals, outside of range or null`);
+    // console.log(lastHit);
+
+    // let randomBoolean = Math.random() > 0.5;
+
+    //computerHits is our array of past hits. prevHit is always the last value
+
+    // right now it will always find a hit within a 4 square radius
+
+    // try logging before conditionals and seeing which are hit
+
+    // function checkBetterShots(checkCounter) {
+    //   playerShipData.forEach((ship) => {
+    //     let sideCheck = 1;
+    //     console.log(ship.occupiedSquares);
+    //     console.log(prevHit);
+    //     if (
+    //       !betterShot &&
+    //       ship.occupiedSquares.includes(prevHit + sideCheck + checkCounter) &&
+    //       !compShotHistory.includes(prevHit + sideCheck + checkCounter)
+    //     ) {
+    //       betterShot = prevHit + sideCheck + checkCounter;
+
+    //     }
+
+    //     if (
+    //       !betterShot &&
+    //       ship.occupiedSquares.includes(
+    //         prevHit + sideCheck * -1 + checkCounter * -1
+    //       ) &&
+    //       !compShotHistory.includes(prevHit + sideCheck * -1 + checkCounter * -1)
+    //     ) {
+    //       betterShot = prevHit + sideCheck * -1 + checkCounter * -1;
+
+    //     }
+
+    //     if (
+    //       !betterShot &&
+    //       ship.occupiedSquares.includes(
+    //         prevHit + sideCheck * 10 + checkCounter * 10
+    //       ) &&
+    //       !compShotHistory.includes(prevHit + sideCheck * 10 + checkCounter * 10)
+    //     ) {
+    //       betterShot = prevHit + sideCheck * 10 + checkCounter * 10;
+
+    //     }
+
+    //     sideCheck *= -1;
+    //     checkCounter *= -1;
+    //     let betterSide = sideCheck * 10;
+
+    //     if (
+    //       !betterShot &&
+    //       ship.occupiedSquares.includes(
+    //         prevHit + betterSide + checkCounter * 10
+    //       ) &&
+    //       !compShotHistory.includes(prevHit + betterSide + checkCounter * 10)
+    //     ) {
+    //       betterShot = prevHit + betterSide + checkCounter * 10;
+
+    //     }
+    //   });
+    // }
+    // if (randomBoolean) {
+    //   betterShot = Math.random() > 0.5 ? randomPrevHit + 1 : randomPrevHit + 10; //checking to right and below}
+    // } else {
+    //   betterShot = Math.random() > 0.5 ? randomPrevHit - 1 : randomPrevHit - 10;
+    // }
+
     betterShot = Math.floor(Math.random() * 100);
   }
 
   while (compShotHistory.includes(betterShot)) {
     betterShot = Math.floor(Math.random() * 100);
-
+    console.log(`randomized final, betterShot is in history`);
     // if (betterShot > 99) {
     //   betterShot = 0;
     // }
