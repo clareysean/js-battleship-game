@@ -69,6 +69,7 @@ const resetBtn = document.getElementById("reset-btn");
 const undoBtn = document.getElementById("undo-btn");
 const compHitList = document.querySelector(".comp-list-ul");
 const playerHitList = document.querySelector(".player-list-ul");
+const thinkingMsg = document.getElementById("comp-thinking-msg");
 
 /*----- functions -----*/
 buildBoards();
@@ -212,8 +213,9 @@ function assignDragged(e) {
 
 function handleDrop(e) {
   e.preventDefault();
-  // console.log(dragged);
+  console.log(dragged);
   draggedShipHistory.push(dragged);
+  // console.log(draggedShipHistory);
   let dropIdx = playerBoardSquares.indexOf(e.target);
   let shipLength = dragged.getAttribute("data-length");
   isHorizontal = dragged.getAttribute("data-rotated") === "true";
@@ -328,6 +330,7 @@ function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
         break;
       }
     }
+    console.log(`horizontal checked`);
   } else {
     let currentStart = validStart; // Introduce a new variable for iteration
     for (let j = 0; j < shipLength; j++) {
@@ -341,6 +344,7 @@ function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
       }
       currentStart += 10; // Increment the currentStart variable instead of modifying validStart
     }
+    console.log(`vertical checked`);
   }
 
   if (isTaken) {
@@ -364,6 +368,8 @@ function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
     // console.log(`after ternary`);
     // console.log(validStart);
     setPlayerShip(validStart, shipLength, isHorizontal);
+    return;
+    console.log(`isTakenRan`);
   } else {
     if (isHorizontal) {
       for (let j = 0; j < shipLength; j++) {
@@ -392,13 +398,17 @@ function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
 
   let lastDroppedShipName =
     draggedShipHistory[draggedShipHistory.length - 1].getAttribute("name");
-
   let lastDroppedShip = playerShipData.find(
     (ship) => ship.name === lastDroppedShipName
   );
+  console.log(lastDroppedShipName);
+  console.log(lastDroppedShip);
   lastDroppedShip.occupiedSquares = shipSquares;
   // console.log(lastDroppedShip);
+  console.log(shipSquares);
+  console.log(lastDroppedShip.occupiedSquares);
   renderBoard(playerTakenSquares, playerBoardSquares);
+  console.log(isTaken);
 }
 
 // shipLengths.forEach((ship) => setupComputerShips(ship));
@@ -670,11 +680,11 @@ function computerShot() {
         !compShotHistory.includes(prevHit + sideCheck + checkCounter)
       ) {
         betterShot = prevHit + sideCheck + checkCounter;
-        console.log(`first conditional`);
-        console.log(sideCheck);
-        console.log(prevHit);
-        console.log(ship.occupiedSquares);
-        console.log(betterShot);
+        // console.log(`first conditional`);
+        // console.log(sideCheck);
+        // console.log(prevHit);
+        // console.log(ship.occupiedSquares);
+        // console.log(betterShot);
       }
 
       if (
@@ -685,11 +695,11 @@ function computerShot() {
         !compShotHistory.includes(prevHit + sideCheck * -1 + checkCounter * -1)
       ) {
         betterShot = prevHit + sideCheck * -1 + checkCounter * -1;
-        console.log(`second conditional`);
-        console.log(sideCheck);
-        console.log(prevHit);
-        console.log(ship.occupiedSquares);
-        console.log(betterShot);
+        // console.log(`second conditional`);
+        // console.log(sideCheck);
+        // console.log(prevHit);
+        // console.log(ship.occupiedSquares);
+        // console.log(betterShot);
       }
 
       if (
@@ -700,11 +710,11 @@ function computerShot() {
         !compShotHistory.includes(prevHit + sideCheck * 10 + checkCounter * 10)
       ) {
         betterShot = prevHit + sideCheck * 10 + checkCounter * 10;
-        console.log(`third conditional`);
-        console.log(sideCheck);
-        console.log(prevHit);
-        console.log(ship.occupiedSquares);
-        console.log(betterShot);
+        // console.log(`third conditional`);
+        // console.log(sideCheck);
+        // console.log(prevHit);
+        // console.log(ship.occupiedSquares);
+        // console.log(betterShot);
       }
 
       sideCheck *= -1;
@@ -719,11 +729,11 @@ function computerShot() {
         !compShotHistory.includes(prevHit + betterSide + checkCounter * 10)
       ) {
         betterShot = prevHit + betterSide + checkCounter * 10;
-        console.log(`fourth conditional`);
-        console.log(sideCheck);
-        console.log(prevHit);
-        console.log(ship.occupiedSquares);
-        console.log(betterShot);
+        // console.log(`fourth conditional`);
+        // console.log(sideCheck);
+        // console.log(prevHit);
+        // console.log(ship.occupiedSquares);
+        // console.log(betterShot);
       }
     });
   }
@@ -760,7 +770,13 @@ function nextTurn(playerTurn) {
     computerBoardSquares.forEach((square) =>
       square.removeEventListener("click", handleShot)
     );
-    computerShot();
+    thinkingMsg.innerText = "Computer thinking...";
+
+    setTimeout(function () {
+      computerShot();
+      thinkingMsg.innerText = "";
+    }, 800);
+
     return;
   }
   // console.log(`player turn`);
