@@ -103,7 +103,7 @@ function rotateSelectedShip() {
   //   angle === "rotate(90deg)" ? "rotate(0deg)" : "rotate(90deg)";
   selectedShip.dataset.rotated =
     selectedShip.dataset.rotated === "true" ? false : true;
-  console.log(selectedShip.dataset.rotated);
+  // console.log(selectedShip.dataset.rotated);
   // console.log(selectedShip.dataset.rotated);
 }
 
@@ -212,7 +212,7 @@ function assignDragged(e) {
 
 function handleDrop(e) {
   e.preventDefault();
-  console.log(dragged);
+  // console.log(dragged);
   draggedShipHistory.push(dragged);
   let dropIdx = playerBoardSquares.indexOf(e.target);
   let shipLength = dragged.getAttribute("data-length");
@@ -234,7 +234,7 @@ function setPlayerShip(startIdx, shipLength, isHorizontal) {
     if (startIdx < 0) {
       startIdx = 99;
     }
-    console.log(`startidx decremented at top level`);
+    // console.log(`startidx decremented at top level`);
   }
   // console.log(isHorizontal);
   // if (!isHorizontal) {
@@ -289,7 +289,7 @@ function checkValidPlayerBounds(shipLength, startIdx, isHorizontal) {
 
         while (playerTakenSquares.includes(startIdx)) {
           startIdx -= 1;
-          console.log(startIdx);
+          // console.log(startIdx);
           if (startIdx < 0) {
             startIdx = 0;
           } else if (startIdx > 99) {
@@ -312,19 +312,19 @@ function checkValidPlayerBounds(shipLength, startIdx, isHorizontal) {
 function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
   let shipSquares = [];
   // side = true;
-  console.log(validStart);
+  // console.log(validStart);
   // console.log(shipLength, validStart, isHorizontal);
   let isTaken = true;
   //check availability
   if (isHorizontal) {
     for (let j = 0; j < shipLength; j++) {
       if (!playerTakenSquares.includes(validStart + j)) {
-        console.log(validStart + j);
-        console.log(`hori not taken`);
+        // console.log(validStart + j);
+        // console.log(`hori not taken`);
         isTaken = false;
       } else {
         isTaken = true;
-        console.log(`hori taken`);
+        // console.log(`hori taken`);
         break;
       }
     }
@@ -333,10 +333,10 @@ function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
     for (let j = 0; j < shipLength; j++) {
       if (!playerTakenSquares.includes(currentStart)) {
         isTaken = false;
-        console.log(`vertical not taken`);
+        // console.log(`vertical not taken`);
       } else {
         isTaken = true;
-        console.log(`Vertical taken`);
+        // console.log(`Vertical taken`);
         break;
       }
       currentStart += 10; // Increment the currentStart variable instead of modifying validStart
@@ -361,22 +361,22 @@ function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
     // console.log(isTaken);
 
     isHorizontal ? validStart-- : (validStart -= 10);
-    console.log(`after ternary`);
-    console.log(validStart);
+    // console.log(`after ternary`);
+    // console.log(validStart);
     setPlayerShip(validStart, shipLength, isHorizontal);
   } else {
     if (isHorizontal) {
       for (let j = 0; j < shipLength; j++) {
         playerTakenSquares.push(validStart + j);
         shipSquares.push(validStart + j);
-        console.log(`added squares to playerTaken array horizontal`);
+        // console.log(`added squares to playerTaken array horizontal`);
         // console.log(validStart + j);
       }
     } else {
       let currentStart = validStart;
       for (let j = 0; j < shipLength; j++) {
         // console.log(currentStart);
-        console.log(`added squares to playerTaken array vertical`);
+        // console.log(`added squares to playerTaken array vertical`);
         playerTakenSquares.push(currentStart);
         shipSquares.push(currentStart);
         currentStart += 10; // Increment the currentStart variable
@@ -397,7 +397,7 @@ function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
     (ship) => ship.name === lastDroppedShipName
   );
   lastDroppedShip.occupiedSquares = shipSquares;
-  console.log(lastDroppedShip);
+  // console.log(lastDroppedShip);
   renderBoard(playerTakenSquares, playerBoardSquares);
 }
 
@@ -524,11 +524,11 @@ function updateComputerTakenSquares(
 function undoDrop() {
   let shipSquaresToRemove =
     draggedSquaresHistory[draggedSquaresHistory.length - 1];
-  console.log(`${playerTakenSquares} before filter`);
+  // console.log(`${playerTakenSquares} before filter`);
   playerTakenSquares = playerTakenSquares.filter(
     (squares) => !shipSquaresToRemove.includes(squares)
   );
-  console.log(`${playerTakenSquares} after filter`);
+  // console.log(`${playerTakenSquares} after filter`);
   draggedSquaresHistory.pop();
   let putBackShip = draggedShipHistory.pop();
   shipContainer.appendChild(putBackShip);
@@ -541,9 +541,9 @@ function undoDrop() {
 }
 
 function renderBoardUndo(takenSquares, boardSquares) {
-  console.log(takenSquares);
+  // console.log(takenSquares);
   boardSquares.forEach((square, i) => {
-    console.log(square);
+    // console.log(square);
     if (!takenSquares.includes(i)) {
       square.style.backgroundColor = "white";
     }
@@ -568,7 +568,7 @@ function handleShot(e) {
     compShipData.forEach((ship) => {
       if (ship.occupiedSquares.includes(shotIdx)) {
         ship.hits++;
-        console.log(ship);
+        // console.log(ship);
       }
     });
   } else {
@@ -593,7 +593,7 @@ function handleComputerShot(shot) {
     playerShipData.forEach((ship) => {
       if (ship.occupiedSquares.includes(shot)) {
         ship.hits++;
-        console.log(ship);
+        // console.log(ship);
       }
     });
   } else {
@@ -607,7 +607,7 @@ function handleComputerShot(shot) {
 
 function checkWinner(playerHits, computerHits) {
   // console.log(hits);
-  console.log(playerHits);
+
   if (playerHits === 17) {
     msg.innerText = `Player wins! Reset game to play again.`;
     cleanup();
@@ -618,9 +618,12 @@ function checkWinner(playerHits, computerHits) {
 }
 
 function computerShot() {
+  let lastHit = computerHits[computerHits.length - 1];
   let shot;
-  let randomPrevHit;
-  let betterShot;
+  let prevHit;
+  let betterShot = null;
+  // let checkCounter = 0;
+
   if (compShotHistory.length < 1) {
     function randomFirstShot(min, max) {
       return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -634,52 +637,133 @@ function computerShot() {
   }
 
   if (computerHits.length === 0) {
-    randomPrevHit = Math.floor(Math.random() * 100);
+    prevHit = Math.floor(Math.random() * 100);
   } else if (computerHits.length === 1) {
-    randomPrevHit = computerHits[0];
+    prevHit = computerHits[0];
   } else {
-    console.log(computerHits);
-    randomPrevHit =
-      computerHits[Math.floor(Math.random() * computerHits.length)];
-    console.log(randomPrevHit);
+    prevHit = lastHit;
   }
 
-  let randomBoolean = Math.random() > 0.5;
+  // console.log(lastHit);
 
-  if (randomBoolean) {
-    betterShot = Math.random() > 0.5 ? randomPrevHit + 1 : randomPrevHit + 10; //checking to right and below}
-  } else {
-    betterShot = Math.random() > 0.5 ? randomPrevHit - 1 : randomPrevHit - 10;
+  // let randomBoolean = Math.random() > 0.5;
+
+  for (let i = 0; i < 5; i++) {
+    if (betterShot) break;
+    console.log(prevHit);
+    console.log(i);
+    checkBetterShots(i);
   }
-  console.log(betterShot);
-  if (betterShot > 99 || betterShot < 0) {
+
+  // betterShot is still able to be assigned to something that is not a hit
+
+  // try logging before conditionals and seeing which are hit
+
+  function checkBetterShots(checkCounter) {
+    playerShipData.forEach((ship) => {
+      let sideCheck = 1;
+      console.log(ship.occupiedSquares);
+      console.log(prevHit);
+      if (
+        !betterShot && // Add this condition to check if betterShot is already set
+        ship.occupiedSquares.includes(prevHit + sideCheck + checkCounter) &&
+        !compShotHistory.includes(prevHit + sideCheck + checkCounter)
+      ) {
+        betterShot = prevHit + sideCheck + checkCounter;
+        console.log(`first conditional`);
+        console.log(sideCheck);
+        console.log(prevHit);
+        console.log(ship.occupiedSquares);
+        console.log(betterShot);
+      }
+
+      if (
+        !betterShot && // Add this condition to check if betterShot is already set
+        ship.occupiedSquares.includes(
+          prevHit + sideCheck * -1 + checkCounter * -1
+        ) &&
+        !compShotHistory.includes(prevHit + sideCheck * -1 + checkCounter * -1)
+      ) {
+        betterShot = prevHit + sideCheck * -1 + checkCounter * -1;
+        console.log(`second conditional`);
+        console.log(sideCheck);
+        console.log(prevHit);
+        console.log(ship.occupiedSquares);
+        console.log(betterShot);
+      }
+
+      if (
+        !betterShot && // Add this condition to check if betterShot is already set
+        ship.occupiedSquares.includes(
+          prevHit + sideCheck * 10 + checkCounter * 10
+        ) &&
+        !compShotHistory.includes(prevHit + sideCheck * 10 + checkCounter * 10)
+      ) {
+        betterShot = prevHit + sideCheck * 10 + checkCounter * 10;
+        console.log(`third conditional`);
+        console.log(sideCheck);
+        console.log(prevHit);
+        console.log(ship.occupiedSquares);
+        console.log(betterShot);
+      }
+
+      sideCheck *= -1;
+      checkCounter *= -1;
+      let betterSide = sideCheck * 10;
+
+      if (
+        !betterShot && // Add this condition to check if betterShot is already set
+        ship.occupiedSquares.includes(
+          prevHit + betterSide + checkCounter * 10
+        ) &&
+        !compShotHistory.includes(prevHit + betterSide + checkCounter * 10)
+      ) {
+        betterShot = prevHit + betterSide + checkCounter * 10;
+        console.log(`fourth conditional`);
+        console.log(sideCheck);
+        console.log(prevHit);
+        console.log(ship.occupiedSquares);
+        console.log(betterShot);
+      }
+    });
+  }
+  // if (randomBoolean) {
+  //   betterShot = Math.random() > 0.5 ? randomPrevHit + 1 : randomPrevHit + 10; //checking to right and below}
+  // } else {
+  //   betterShot = Math.random() > 0.5 ? randomPrevHit - 1 : randomPrevHit - 10;
+  // }
+
+  if (betterShot > 99 || betterShot < 0 || !betterShot) {
     betterShot = Math.floor(Math.random() * 100);
   }
-  console.log(betterShot);
+
   while (compShotHistory.includes(betterShot)) {
     betterShot = Math.floor(Math.random() * 100);
 
-    if (betterShot > 99) {
-      betterShot = 0;
-    }
+    // if (betterShot > 99) {
+    //   betterShot = 0;
+    // }
   }
   // console.log(betterShot);
   compShotHistory.push(betterShot);
   // console.log(compShotHistory);
+  console.log(
+    `last stage in computerShot, this is passed to handle` + betterShot
+  );
   handleComputerShot(betterShot);
 }
 
 function nextTurn(playerTurn) {
   if (playerHits === 17 || computerHits.length === 17) return;
   if (!playerTurn) {
-    console.log(`comp turn`);
+    // console.log(`comp turn`);
     computerBoardSquares.forEach((square) =>
       square.removeEventListener("click", handleShot)
     );
     computerShot();
     return;
   }
-  console.log(`player turn`);
+  // console.log(`player turn`);
   computerBoardSquares.forEach((square) =>
     square.addEventListener("click", handleShot)
   );
@@ -692,10 +776,10 @@ function checkSunkShips(shipData) {
     {
       if (ship.hits === ship.length && ship.sunk === false) {
         playerTurn ? (list = playerHitList) : (list = compHitList);
-        console.log(list);
+        // console.log(list);
         let sunkShip = document.createElement("li");
-        console.log(ship.sunk);
-        console.log(ship.name);
+        // console.log(ship.sunk);
+        // console.log(ship.name);
         sunkShip.innerText = ship.name;
         list.appendChild(sunkShip);
         ship.sunk = true;

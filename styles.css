@@ -70,6 +70,7 @@ p {
 #computer-board > div:hover,
 #player-board > div:hover {
   background-color: rgb(111, 171, 254) !important;
+  opacity: 0.5;
 }
 
 h2 {
