@@ -11,6 +11,21 @@ const ranges = [
   { min: 72, max: 72 },
 ];
 
+const playerShipData = [
+  { name: "destroyer", occupiedSquares: null, hits: 0, length: 2 },
+  { name: "sub", occupiedSquares: null, hits: 0, length: 3 },
+  { name: "cruiser", occupiedSquares: null, hits: 0, length: 3 },
+  { name: "battleship", occupiedSquares: null, hits: 0, length: 4 },
+  { name: "carrier", occupiedSquares: null, hits: 0, length: 5 },
+];
+const compShipData = [
+  { name: "destroyer", occupiedSquares: null, hits: 0, length: 2 },
+  { name: "sub", occupiedSquares: null, hits: 0, length: 3 },
+  { name: "cruiser", occupiedSquares: null, hits: 0, length: 3 },
+  { name: "battleship", occupiedSquares: null, hits: 0, length: 4 },
+  { name: "carrier", occupiedSquares: null, hits: 0, length: 5 },
+];
+
 /*----- state variables -----*/
 
 let validStart;
@@ -123,7 +138,13 @@ function startGame() {
   ~ Click a ship to select and rotate ~`;
   undoBtn.addEventListener("click", undoDrop);
 
-  shipLengths.forEach((ship) => setupComputerShips(ship));
+  compShipData.forEach((ship) => {
+    setupComputerShips(ship.length, ship.name);
+  });
+
+  playerShipData.forEach((ship) => {
+    ship.occupiedSquares = null;
+  });
   rotateBtn.addEventListener("click", rotateSelectedShip);
 
   resetBtn.addEventListener("click", startGame);
@@ -134,9 +155,9 @@ function startGame() {
   computerBoardSquares.forEach(
     (square) => (square.style.backgroundColor = "white")
   );
-  computerBoardSquares.forEach((square) =>
-    square.addEventListener("click", handleShot)
-  );
+  // computerBoardSquares.forEach((square) =>
+  //   square.addEventListener("click", handleShot)
+  // );
   playerBoard.addEventListener("dragover", preventDragoverDefault);
 
   ships.forEach((ship) => {
@@ -167,11 +188,10 @@ function assignDragged(e) {
 }
 
 function handleDrop(e) {
+  e.preventDefault();
   console.log(dragged);
   draggedShipHistory.push(dragged);
-  e.preventDefault();
   let dropIdx = playerBoardSquares.indexOf(e.target);
-
   let shipLength = dragged.getAttribute("data-length");
   isHorizontal = dragged.getAttribute("data-rotated") === "true";
   setPlayerShip(dropIdx, shipLength, isHorizontal);
@@ -347,13 +367,27 @@ function updatePlayerTakenSquares(shipLength, validStart, isHorizontal) {
     draggedSquaresHistory.push(shipSquares);
   }
 
+  let lastDroppedShipName =
+    draggedShipHistory[draggedShipHistory.length - 1].getAttribute("name");
+
+  let lastDroppedShip = playerShipData.find(
+    (ship) => ship.name === lastDroppedShipName
+  );
+  lastDroppedShip.occupiedSquares = shipSquares;
+  console.log(lastDroppedShip);
   renderBoard(playerTakenSquares, playerBoardSquares);
 }
 
-shipLengths.forEach((ship) => setupComputerShips(ship));
+// shipLengths.forEach((ship) => setupComputerShips(ship));
+compShipData.forEach((ship) => {
+  setupComputerShips(ship.length, ship.name);
+});
 
-function setupComputerShips(shipLength) {
+function setupComputerShips(shipLength, shipName) {
   //for all ships
+  // console.log(shipLength, shipName);
+
+  if (computerTakenSquares.length === 17) return;
 
   // console.log(shipLengthsArr[i]);
   let randomIdx = Math.floor(Math.random() * 100);
@@ -362,7 +396,7 @@ function setupComputerShips(shipLength) {
   }
   // randomly make ships horizontal
   let horizontal = Math.random() < 0.5;
-  checkValidComputerBounds(shipLength, randomIdx, horizontal);
+  checkValidComputerBounds(shipLength, randomIdx, horizontal, shipName);
 
   //vertical
 
@@ -372,7 +406,7 @@ function setupComputerShips(shipLength) {
   // if computerTakenSquares contains
 }
 
-function checkValidComputerBounds(shipLength, randomIdx, horizontal) {
+function checkValidComputerBounds(shipLength, randomIdx, horizontal, shipName) {
   if (horizontal) {
     if (randomIdx > 100 - shipLength) {
       randomIdx = 100 - shipLength;
@@ -406,11 +440,17 @@ function checkValidComputerBounds(shipLength, randomIdx, horizontal) {
   }
   validStart = randomIdx;
   // console.log(`pre update` + validStart);
-  updateComputerTakenSquares(shipLength, validStart, horizontal);
+  updateComputerTakenSquares(shipLength, validStart, horizontal, shipName);
 }
 
-function updateComputerTakenSquares(shipLength, validStart, horizontal) {
+function updateComputerTakenSquares(
+  shipLength,
+  validStart,
+  horizontal,
+  shipName
+) {
   let isTaken = true;
+  let compShipSquares = [];
   if (horizontal) {
     for (let j = 0; j < shipLength; j++) {
       if (!computerTakenSquares.includes(validStart + j)) {
@@ -435,20 +475,24 @@ function updateComputerTakenSquares(shipLength, validStart, horizontal) {
   }
 
   if (isTaken) {
-    setupComputerShips(shipLength);
+    setupComputerShips(shipLength, shipName);
   } else {
     if (horizontal) {
       for (let j = 0; j < shipLength; j++) {
         computerTakenSquares.push(validStart + j);
+        compShipSquares.push(validStart + j);
         // console.log(validStart + j);
       }
     } else {
       let currentStart = validStart;
       for (let j = 0; j < shipLength; j++) {
         computerTakenSquares.push(currentStart);
+        compShipSquares.push(currentStart);
         currentStart += 10; // Increment the currentStart variable
       }
     }
+    console.log(shipName);
+    console.log(compShipSquares);
   }
 }
 
