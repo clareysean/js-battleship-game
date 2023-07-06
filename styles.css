@@ -6,19 +6,14 @@
 }
 * {
   box-sizing: border-box;
+  font-family: "Press Start 2P", Arial, sans-serif;
 }
 
-html {
-  max-height: 100vh;
-  margin: 0;
-  font-family: "Press Start 2P", cursive;
-  background-color: rgb(201, 227, 255);
-}
-
+html,
 body {
   margin: 0;
-  padding: 0;
-  max-height: 100vh;
+  height: 100%;
+  background-color: rgb(201, 227, 255);
 }
 
 p {
@@ -39,6 +34,11 @@ p {
   display: inline-block;
 }
 
+.game-boards-container {
+  display: inline-block;
+  padding-top: 10vmin;
+}
+
 #player-board {
   padding: none;
   height: 55vmin;
@@ -51,6 +51,9 @@ p {
   background-color: var(--board-bg);
 }
 
+#comp-thinking-msg {
+  visibility: hidden;
+}
 #computer-board {
   height: 55vmin;
   width: 55vmin;
@@ -76,6 +79,11 @@ p {
 h2 {
   position: inline;
   text-align: left;
+  margin-bottom: 5vmin;
+}
+
+.player-h2 {
+  margin-bottom: 7.1vmin;
 }
 
 #bottom-window {
@@ -121,11 +129,26 @@ h2 {
 #ship-lists {
   height: 55vmin;
   width: 40vmin;
+  min-width: fit-content;
   display: grid;
   grid-template-columns: 1fr 1fr;
   border: 2px solid green;
   background-color: var(--secondary-blue);
   /* margin: 3rem 0 0 5rem; */
+}
+
+h4 {
+  font-size: 2vmin;
+}
+
+.comp-list-h4 {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.player-list-h4 {
+  grid-column: 2;
+  grid-row: 1;
 }
 
 .comp-list-ul {
@@ -162,4 +185,20 @@ button:hover {
 
     margin-top: 20vmin;
   }
+}
+
+hr {
+  height: 2px;
+  width: 80%;
+  display: inline;
+}
+
+hr-l {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+hr-r {
+  grid-column: 2;
+  grid-row: 1;
 }

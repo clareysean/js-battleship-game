@@ -832,11 +832,11 @@ function nextTurn(playerTurn) {
     computerBoardSquares.forEach((square) =>
       square.removeEventListener("click", handleShot)
     );
-    thinkingMsg.innerText = "Computer thinking...";
+    thinkingMsg.style.visibility = "visible";
 
     setTimeout(function () {
       computerShot();
-      thinkingMsg.innerText = "";
+      thinkingMsg.style.visibility = "hidden";
     }, 100);
 
     return;
