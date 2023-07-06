@@ -12,18 +12,30 @@ const ranges = [
 ];
 
 const playerShipData = [
-  { name: "destroyer", occupiedSquares: null, hits: 0, length: 2 },
-  { name: "sub", occupiedSquares: null, hits: 0, length: 3 },
-  { name: "cruiser", occupiedSquares: null, hits: 0, length: 3 },
-  { name: "battleship", occupiedSquares: null, hits: 0, length: 4 },
-  { name: "carrier", occupiedSquares: null, hits: 0, length: 5 },
+  { name: "destroyer", occupiedSquares: null, hits: 0, length: 2, sunk: false },
+  { name: "sub", occupiedSquares: null, hits: 0, length: 3, sunk: false },
+  { name: "cruiser", occupiedSquares: null, hits: 0, length: 3, sunk: false },
+  {
+    name: "battleship",
+    occupiedSquares: null,
+    hits: 0,
+    length: 4,
+    sunk: false,
+  },
+  { name: "carrier", occupiedSquares: null, hits: 0, length: 5, sunk: false },
 ];
 const compShipData = [
-  { name: "destroyer", occupiedSquares: null, hits: 0, length: 2 },
-  { name: "sub", occupiedSquares: null, hits: 0, length: 3 },
-  { name: "cruiser", occupiedSquares: null, hits: 0, length: 3 },
-  { name: "battleship", occupiedSquares: null, hits: 0, length: 4 },
-  { name: "carrier", occupiedSquares: null, hits: 0, length: 5 },
+  { name: "destroyer", occupiedSquares: null, hits: 0, length: 2, sunk: false },
+  { name: "sub", occupiedSquares: null, hits: 0, length: 3, sunk: false },
+  { name: "cruiser", occupiedSquares: null, hits: 0, length: 3, sunk: false },
+  {
+    name: "battleship",
+    occupiedSquares: null,
+    hits: 0,
+    length: 4,
+    sunk: false,
+  },
+  { name: "carrier", occupiedSquares: null, hits: 0, length: 5, sunk: false },
 ];
 
 /*----- state variables -----*/
@@ -55,6 +67,8 @@ const rotateBtn = document.getElementById("rotate-btn");
 const shipContainer = document.getElementById("ship-container");
 const resetBtn = document.getElementById("reset-btn");
 const undoBtn = document.getElementById("undo-btn");
+const compHitList = document.querySelector(".comp-list-ul");
+const playerHitList = document.querySelector(".player-list-ul");
 
 /*----- functions -----*/
 buildBoards();
@@ -120,6 +134,8 @@ const computerBoardSquares = [...computerBoard.querySelectorAll("div")];
 startGame();
 
 function startGame() {
+  compHitList.innerHTML = null;
+  playerHitList.innerHTML = null;
   selectedShip = null;
   dragged = null;
   isHorizontal = false;
@@ -139,12 +155,19 @@ function startGame() {
   undoBtn.addEventListener("click", undoDrop);
 
   compShipData.forEach((ship) => {
-    setupComputerShips(ship.length, ship.name);
+    ship.occupiedSquares = null;
+    ship.sunk = false;
+    ship.hits = 0;
   });
 
   playerShipData.forEach((ship) => {
     ship.occupiedSquares = null;
+    ship.sunk = false;
+    ship.hits = 0;
   });
+
+  compShipData.forEach((ship) => setupComputerShips(ship.length, ship.name));
+
   rotateBtn.addEventListener("click", rotateSelectedShip);
 
   resetBtn.addEventListener("click", startGame);
@@ -491,8 +514,10 @@ function updateComputerTakenSquares(
         currentStart += 10; // Increment the currentStart variable
       }
     }
-    console.log(shipName);
-    console.log(compShipSquares);
+    let lastDroppedCompShip = compShipData.find(
+      (ship) => ship.name === shipName
+    );
+    lastDroppedCompShip.occupiedSquares = compShipSquares;
   }
 }
 
@@ -540,28 +565,42 @@ function handleShot(e) {
     computerBoardSquares[shotIdx].style.backgroundColor = "red";
     msg.innerText = `It's a hit!`;
     playerHits++;
+    compShipData.forEach((ship) => {
+      if (ship.occupiedSquares.includes(shotIdx)) {
+        ship.hits++;
+        console.log(ship);
+      }
+    });
   } else {
     msg.innerText = `Missed... `;
     computerBoardSquares[shotIdx].style.backgroundColor = "gray";
   }
   playerShotHistory.push(shotIdx);
-  checkWinner(playerHits, computerHits);
   playerTurn = false;
+  checkSunkShips(compShipData);
+  checkWinner(playerHits, computerHits);
 
   nextTurn(playerTurn);
 }
 
 function handleComputerShot(shot) {
   let computerShotTarget = playerBoardSquares[shot];
-  console.log(shot);
+  // console.log(shot);
 
   if (playerTakenSquares.includes(shot)) {
     computerHits.push(shot);
     computerShotTarget.style.backgroundColor = "red";
+    playerShipData.forEach((ship) => {
+      if (ship.occupiedSquares.includes(shot)) {
+        ship.hits++;
+        console.log(ship);
+      }
+    });
   } else {
     computerShotTarget.style.backgroundColor = "gray";
   }
   playerTurn = true;
+  checkSunkShips(playerShipData);
   checkWinner(playerHits, computerHits);
   nextTurn(playerTurn);
 }
@@ -645,6 +684,27 @@ function nextTurn(playerTurn) {
     square.addEventListener("click", handleShot)
   );
   msg.innerText = `Click a cell on the computer's board to take a shot!`;
+}
+
+function checkSunkShips(shipData) {
+  let list;
+  shipData.forEach((ship) => {
+    {
+      if (ship.hits === ship.length && ship.sunk === false) {
+        playerTurn ? (list = playerHitList) : (list = compHitList);
+        console.log(list);
+        let sunkShip = document.createElement("li");
+        console.log(ship.sunk);
+        console.log(ship.name);
+        sunkShip.innerText = ship.name;
+        list.appendChild(sunkShip);
+        ship.sunk = true;
+      }
+      // console.log(ship.hits);
+    }
+  });
+  //   const compHitList = document.getElementsByClassName("comp-list-ul");
+  // const playerHitList = document.getElementsByClassName("player-list-ul");
 }
 
 function cleanup() {

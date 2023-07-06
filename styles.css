@@ -102,60 +102,13 @@ h2 {
   border-radius: 1rem;
 }
 
-/* .destroyer {
-  height: 10vmin;
-  width: 5vmin;
-}
-
-.sub {
-  height: 15vmin;
-  width: 5vmin;
-}
-
-.cruiser {
-  height: 15vmin;
-  width: 5vmin;
-}
-
-.battleship {
-  height: 20vmin;
-  width: 5vmin;
-}
-
-.carrier {
-  height: 25vmin;
-  width: 5vmin;
-} */
-
-/* .rotated {
-  transform: rotate(90deg);
-} */
-
 .ship-focus {
   border: 2px solid rgb(250, 179, 49);
 }
 
-/* .destroyer-rotated {
-  height: 5vmin;
-  width: 10vmin;
+#ship-lists {
+  height: 20vmin;
+  width: 40vmin;
+  display: flex;
+  gap: 5vmin;
 }
-
-.sub-rotated {
-  height: 5vmin;
-  width: 15vmin;
-}
-
-.cruiser-rotated {
-  height: 5vmin;
-  width: 15vmin;
-}
-
-.battleship-rotated {
-  height: 5vmin;
-  width: 20vmin;
-}
-
-.carrier-rotated {
-  height: 5vmin;
-  width: 25vmin;
-} */
