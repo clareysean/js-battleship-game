@@ -11,16 +11,20 @@
       href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap"
       rel="stylesheet"
     />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
   </head>
   <body>
     <div id="page-container">
       <div class="ship-list-container">
         <div id="ship-lists">
           <h4 class="comp-list-h4">SUNK COMPUTER SHIPS</h4>
-          <hr class="hr-l" />
+
           <ul class="comp-list-ul"></ul>
           <h4 class="player-list-h4">SUNK PLAYER SHIPS</h4>
-          <hr class="hr-r" />
+
           <ul class="player-list-ul"></ul>
         </div>
       </div>
@@ -38,7 +42,7 @@
       <section id="bottom-window">
         <div id="info">
           <h1>BATTLESHIP</h1>
-          <p id="msg">Drag all your ships onto the board to start a game!</p>
+          <p id="msg"></p>
           <button id="reset-btn">RESET GAME</button
           ><button id="rotate-btn">ROTATE SHIP</button
           ><button id="undo-btn">UNDO DROP</button>
@@ -50,7 +54,7 @@
             data-length="2"
             data-rotated="false"
             draggable="true"
-            style="height: 10vmin; width: 5vmin"
+            style="height: 8vmin; width: 4vmin"
           ></div>
           <div
             name="sub"
@@ -58,7 +62,7 @@
             data-length="3"
             data-rotated="false"
             draggable="true"
-            style="height: 15vmin; width: 5vmin"
+            style="height: 13vmin; width: 4.3vmin"
           ></div>
           <div
             name="cruiser"
@@ -66,7 +70,7 @@
             data-length="3"
             data-rotated="false"
             draggable="true"
-            style="height: 15vmin; width: 5vmin"
+            style="height: 13vmin; width: 4.3vmin"
           ></div>
           <div
             name="battleship"
@@ -74,7 +78,7 @@
             data-length="4"
             data-rotated="false"
             draggable="true"
-            style="height: 20vmin; width: 5vmin"
+            style="height: 18vmin; width: 4.5vmin"
           ></div>
           <div
             name="carrier"
@@ -82,7 +86,7 @@
             data-length="5"
             data-rotated="false"
             draggable="true"
-            style="height: 25vmin; width: 5vmin"
+            style="height: 23vmin; width: 4.6vmin"
           ></div>
         </div>
       </section>

@@ -152,9 +152,9 @@ function startGame() {
   draggedSquaresHistory = [];
   draggedShipHistory = [];
 
-  msg.innerText = `~ Drag all your ships onto the board to start a game ~
+  msg.innerText = `~ Drag all your ships onto the board to start a game
   
-  ~ Click a ship to select and rotate ~`;
+  ~ Click a ship to select and rotate`;
   undoBtn.addEventListener("click", undoDrop);
 
   compShipData.forEach((ship) => {
@@ -837,7 +837,7 @@ function nextTurn(playerTurn) {
     setTimeout(function () {
       computerShot();
       thinkingMsg.style.visibility = "hidden";
-    }, 100);
+    }, 700);
 
     return;
   }

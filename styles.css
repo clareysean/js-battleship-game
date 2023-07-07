@@ -13,6 +13,8 @@ html,
 body {
   margin: 0;
   height: 100%;
+  width: 100%;
+  overflow: auto;
   background-color: rgb(201, 227, 255);
 }
 
@@ -22,10 +24,10 @@ p {
 }
 
 #page-container {
-  margin: 0 10vmin 10vmin 10vmin;
+  margin: 0 auto;
   text-align: center;
-  max-height: 100vh;
-  height: fit-content;
+  min-height: 100vh;
+  overflow: hidden;
 }
 #player-board-container {
   display: inline-block;
@@ -36,32 +38,33 @@ p {
 
 .game-boards-container {
   display: inline-block;
-  padding-top: 10vmin;
+  vertical-align: super;
 }
 
 #player-board {
   padding: none;
-  height: 55vmin;
-  width: 55vmin;
+  height: 47vmin;
+  width: 47vmin;
   display: grid;
   gap: 1px;
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(10, 1fr);
-  border: 2px solid black;
+  outline: 3px outset gray;
   background-color: var(--board-bg);
 }
 
 #comp-thinking-msg {
   visibility: hidden;
+  margin-bottom: 0.3vmin;
 }
 #computer-board {
-  height: 55vmin;
-  width: 55vmin;
+  height: 47vmin;
+  width: 47vmin;
   display: grid;
   gap: 1px;
   grid-template-columns: repeat(10, 1fr);
   grid-template-rows: repeat(10, 1fr);
-  border: 2px solid black;
+  outline: 3px outset gray;
   background-color: var(--board-bg);
 }
 
@@ -79,36 +82,47 @@ p {
 h2 {
   position: inline;
   text-align: left;
-  margin-bottom: 5vmin;
+  margin-bottom: 3vmin;
 }
 
 .player-h2 {
-  margin-bottom: 7.1vmin;
+  margin-bottom: 5vmin;
 }
 
 #bottom-window {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 2rem auto;
-  width: 160.8vmin;
+  margin: 6vmin auto;
+  width: 73.2%;
   max-width: 100vw;
-  height: 32vmin;
+  height: 30vmin;
   text-align: center;
-  border: 2px solid blue;
+  /* border: 2px solid blue; */
+  /* outline: 3px outset gray; */
 }
 
 #info {
   text-align: left;
-  border: 1px solid red;
-  width: 47.7%;
+  width: 40vw;
   height: 30vmin;
+  padding: 0 0.7vw 0 0.7vw;
+  display: grid;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+#msg {
+  margin: 1vmin auto;
+  font-size: 2vmin;
+  grid-row: 2;
+  grid-column: 1 / span 3;
 }
 
 #ship-container {
-  border: 2px solid black;
-  height: 32vmin;
-  width: 95vmin;
+  height: 30vmin;
+  width: 40vw;
+  max-width: 100%;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -124,17 +138,22 @@ h2 {
   border: 2px solid rgb(250, 179, 49);
 }
 .ship-list-container {
+  height: fit-content;
   display: inline-block;
+  padding: 0;
+  vertical-align: super;
 }
 #ship-lists {
-  height: 55vmin;
-  width: 40vmin;
+  height: 47vh;
+  width: 48vmin;
+  outline: 3px outset gray;
   min-width: fit-content;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  border: 2px solid green;
+  grid-template-rows: repeat(4, 1fr);
   background-color: var(--secondary-blue);
-  /* margin: 3rem 0 0 5rem; */
+  text-align: left;
+  padding: 0 1vw 0 1vw;
 }
 
 h4 {
@@ -152,45 +171,106 @@ h4 {
 }
 
 .comp-list-ul {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
   grid-column: 1;
   grid-row: 2;
 }
 
 .player-list-ul {
-  grid-column: 2;
-  grid-row: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  grid-column: 2 / span 2;
+  grid-row: 2 / span 2;
 }
 
 li {
-  font-size: 1rem;
+  font-size: 0.8vw;
+  margin: 0.5vmin;
+}
+
+ul {
+  /* margin-top: 10vh; */
+  list-style-position: inside;
+  padding-left: 0;
 }
 
 button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: none;
   background-color: var(--secondary-blue);
   height: 5vmin;
-  width: 20vmin;
+  width: 95%;
   border-radius: 0.2rem;
-  margin: 0.5rem;
+  margin: 1vmin;
   transition: all ease-in-out 0.1s;
+  vertical-align: top;
+}
+
+#reset-btn {
+  grid-row: 3;
+  grid-column: 1;
+}
+#rotate-btn {
+  grid-row: 3;
+  grid-column: 2;
+}
+#undo-btn {
+  grid-row: 3;
+  grid-column: 3;
 }
 
 button:hover {
   background-color: var(--blue-hover);
 }
 
-@media screen and (max-width: 1750px) {
-  .ship-list-container {
-    display: inline-block;
-
-    margin-top: 20vmin;
+@media screen and (max-width: 1500px) {
+  li {
+    font-size: 0.7vw;
   }
 }
-
-hr {
-  height: 2px;
-  width: 80%;
-  display: inline;
+@media screen and (max-width: 1400px) {
+  .ship-list-container {
+    display: inline-block;
+  }
+  #ship-lists {
+    height: 13vmin;
+    width: 60vw;
+    margin: 0.9vmin auto auto auto;
+  }
+  h4 {
+    font-size: 1.2vmin;
+  }
+  h1 {
+    font-size: 2vmin;
+    margin-top: -0.1vh;
+  }
+  #msg {
+    font-size: 1.6vmin;
+  }
+  #bottom-window {
+    width: 98vw;
+    height: 25vmin;
+    margin-top: 2vh;
+  }
+  #info {
+    height: 20vmin;
+  }
+  #ship-container {
+    height: 20vmin;
+    margin-left: 6vw;
+  }
+  .game-boards-container {
+    display: inline-block;
+    padding-top: 0.5vmin;
+    vertical-align: top;
+  }
 }
 
 hr-l {
