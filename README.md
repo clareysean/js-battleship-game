@@ -38,7 +38,7 @@ To play, follow these steps:
 
 #### Game window
 
-![Game window img](https://imgur.com/CAacxQs)
+![Game window img](https://imgur.com/CAacxQs.jpeg)
 
 NOTE: _No keyboard controls are required for this game._
 
