@@ -36,6 +36,10 @@ To play, follow these steps:
 - Undo a piece placement with the 'UNDO DROP' button.
 - Click an empty square on the computer's board to take a shot.
 
+#### Game window
+
+<img src="https://imgur.com/a/aYxbpn5" alt="drawing" width="200"/>
+
 NOTE: _No keyboard controls are required for this game._
 
 ## Compatibility
