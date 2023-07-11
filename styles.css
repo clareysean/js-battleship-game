@@ -7,7 +7,6 @@
 * {
   box-sizing: border-box;
   font-family: "Press Start 2P", Arial, sans-serif;
-  line-height: 1.2;
 }
 
 html,
@@ -134,7 +133,6 @@ p {
 
 h2 {
   text-align: left;
-  margin-bottom: 3vmin;
 }
 
 .player-h2 {
