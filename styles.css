@@ -7,6 +7,7 @@
 * {
   box-sizing: border-box;
   font-family: "Press Start 2P", Arial, sans-serif;
+  /* line-height: 1.2; */
 }
 
 html,
@@ -83,10 +84,12 @@ p {
 }
 #computer-board-container {
   display: inline-block;
+  position: relative;
 }
 
 .game-boards-container {
   display: inline-block;
+  position: relative;
 }
 
 #player-board {
@@ -100,11 +103,6 @@ p {
   grid-template-rows: repeat(10, 1fr);
   outline: 3px outset gray;
   background-color: var(--board-bg);
-}
-
-#comp-thinking-msg {
-  visibility: hidden;
-  margin-bottom: 0.3vmin;
 }
 
 #computer-board {
@@ -133,19 +131,20 @@ p {
 
 h2 {
   text-align: left;
+  margin-bottom: 3.6vmin;
+  font-size: 2.5vmin;
 }
 
-.player-h2 {
-  margin: 0 0 4.9vmin 0;
-}
-
-span {
-  margin: 0 0 3vh 0;
-  font-size: 2vmin;
+#comp-thinking-msg {
+  /* visibility: hidden; */
+  position: absolute;
+  font-size: 1.5vmin;
+  top: 6vmin;
 }
 
 #bottom-window {
   display: flex;
+  position: relative;
   align-items: center;
   justify-content: center;
   margin: 3vh auto;
@@ -160,6 +159,8 @@ h1 {
 }
 
 #info {
+  position: absolute;
+  right: 46.5%;
   text-align: left;
   width: 40vw;
   height: 30vmin;
@@ -177,6 +178,8 @@ h1 {
 }
 
 #ship-container {
+  position: absolute;
+  left: 50%;
   height: 30vmin;
   width: 40vw;
   max-width: 100%;
@@ -187,17 +190,23 @@ h1 {
 
 .ship {
   background-color: var(--main-blue);
-  /* border-radius: 1rem; */
+  border-radius: 2px;
   outline: 1px outset gray;
 }
 
+.ship:hover {
+  -webkit-box-shadow: 0px 0px 15px 1px #5485ff;
+  box-shadow: 0px 0px 15px 1px #5485ff;
+}
+
 .ship-focus {
-  border: 2px solid rgb(250, 179, 49);
+  outline: 3px solid rgb(250, 179, 49);
 }
 .ship-list-container {
   height: fit-content;
   display: inline-block;
   padding: 0;
+  vertical-align: super;
 }
 #ship-lists {
   height: 47vh;
@@ -212,18 +221,16 @@ h1 {
   padding: 0 2vw 0 1vw;
 }
 
-h4 {
-  font-size: 2vmin;
-}
-
 .comp-list-h4 {
   grid-column: 1;
   grid-row: 1;
+  font-size: 2vmin;
 }
 
 .player-list-h4 {
   grid-column: 2;
   grid-row: 1;
+  font-size: 2vmin;
 }
 
 .comp-list-ul {
@@ -256,6 +263,7 @@ ul {
 
 button {
   display: flex;
+  font-size: 1.6vmin;
   align-items: center;
   justify-content: center;
   border: none;
@@ -293,7 +301,7 @@ button:hover {
     display: inline-block;
   }
   #ship-lists {
-    height: 13vmin;
+    height: 21vmin;
     width: 60vw;
     margin: 0.9vmin auto auto auto;
   }
@@ -315,7 +323,7 @@ button:hover {
     align-items: center;
     justify-content: center;
     margin: 0 auto;
-    width: 98%;
+    width: 70%;
     max-width: 100vw;
     height: 30vmin;
     text-align: center;
@@ -325,7 +333,8 @@ button:hover {
   }
   #ship-container {
     height: 20vmin;
-    margin-left: 6vw;
+    left: 55%;
+    /* margin-left: 6vw; */
   }
   .game-boards-container {
     display: inline-block;
@@ -335,34 +344,49 @@ button:hover {
 }
 
 @media screen and (max-width: 1180px) {
+  #ship-lists {
+    margin-bottom: -5%;
+  }
   .ship-list-container {
     margin-bottom: 7vh;
   }
-  span {
-    margin: 0 0 2vh -25vw;
+  #comp-thinking-msg {
     font-size: 1vmin;
+    top: 6.5vmin;
+  }
+  #info {
+    right: 17%;
+  }
+  #ship-container {
+    left: 14%;
+    top: 85%;
+    height: 31vmin;
+  }
+  #bottom-window {
+    height: 30vmin;
   }
 }
 
 @media screen and (max-width: 750px) {
+  #ship-lists {
+    margin-bottom: -13%;
+  }
   #bottom-window {
     flex-direction: column;
   }
-  #info {
-    margin-top: 23vh;
-  }
   #ship-container {
-    margin-top: 10vh;
+    /* margin-top: 10vh; */
+    height: 35vmin;
   }
   .comp-h2 {
     width: 10%;
     margin-bottom: 1vh;
   }
-  span {
-    margin: 0 0 2vh -25vw;
-    font-size: 1vmin;
-  }
   .ship-list-container {
     margin-bottom: 7vh;
+  }
+  #comp-thinking-msg {
+    right: 2.7vw;
+    top: 3.4vmin;
   }
 }
